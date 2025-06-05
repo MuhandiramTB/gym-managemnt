@@ -9,6 +9,7 @@ import {
   BuildingOfficeIcon,
   Cog6ToothIcon,
   CubeIcon,
+  CalendarIcon,
 } from '@heroicons/react/24/outline';
 
 const navigation = [
@@ -17,6 +18,7 @@ const navigation = [
   { name: 'Members', href: '/members', icon: UserGroupIcon },
   { name: 'Attendance', href: '/attendance', icon: ClockIcon },
   { name: 'Billing', href: '/billing', icon: CreditCardIcon },
+  { name: 'Subscriptions', href: '/subscriptions', icon: CalendarIcon },
   { name: 'Logs', href: '/logs', icon: DocumentTextIcon },
   { name: 'Branches', href: '/branches', icon: BuildingOfficeIcon },
   { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },

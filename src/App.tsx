@@ -2,16 +2,16 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import Dashboard from './components/dashboard/Dashboard';
+import PackagesPage from './components/packages/PackagesPage';
+import MembersPage from './components/members/MembersPage';
+import AttendancePage from './components/attendance/AttendancePage';
+import BillingPage from './components/billing/BillingPage';
+import LogsPage from './components/logs/LogsPage';
+import BranchesPage from './components/branches/BranchesPage';
+import SettingsPage from './components/settings/SettingsPage';
+import SubscriptionsPage from './components/subscriptions/SubscriptionsPage';
+import ProfilePage from './components/profile/ProfilePage';
 import './App.css';
-
-// Placeholder components for other routes
-const Packages: React.FC = () => <div>Packages Management</div>;
-const Members: React.FC = () => <div>Members Management</div>;
-const Attendance: React.FC = () => <div>Attendance Tracking</div>;
-const Billing: React.FC = () => <div>Billing Management</div>;
-const Logs: React.FC = () => <div>Activity Logs</div>;
-const Branches: React.FC = () => <div>Branches Overview</div>;
-const Settings: React.FC = () => <div>Settings</div>;
 
 const App: React.FC = () => {
   return (
@@ -19,13 +19,15 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
-          <Route path="packages" element={<Packages />} />
-          <Route path="members" element={<Members />} />
-          <Route path="attendance" element={<Attendance />} />
-          <Route path="billing" element={<Billing />} />
-          <Route path="logs" element={<Logs />} />
-          <Route path="branches" element={<Branches />} />
-          <Route path="settings" element={<Settings />} />
+          <Route path="packages" element={<PackagesPage />} />
+          <Route path="members" element={<MembersPage />} />
+          <Route path="attendance" element={<AttendancePage />} />
+          <Route path="billing" element={<BillingPage />} />
+          <Route path="logs" element={<LogsPage />} />
+          <Route path="branches" element={<BranchesPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="subscriptions" element={<SubscriptionsPage />} />
+          <Route path="profile" element={<ProfilePage />} />
         </Route>
       </Routes>
     </Router>
