@@ -143,7 +143,7 @@ const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSu
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-gray-900 overflow-y-auto">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 shadow-lg">
         <div className="relative">
@@ -213,7 +213,7 @@ const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSu
           {currentStep === 1 && (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-300 mb-1">
                   Package Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -221,15 +221,15 @@ const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSu
                   placeholder="Enter package name"
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  className={`w-full px-3 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.name ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-blue-400'
+                  className={`w-full px-3 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-white placeholder-gray-400 ${
+                    errors.name ? 'border-red-500 focus:border-red-500' : 'border-gray-600 focus:border-blue-500'
                   }`}
                 />
                 {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-300 mb-1">
                   Description <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -237,8 +237,8 @@ const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSu
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                   rows={3}
-                  className={`w-full px-3 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
-                    errors.description ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-blue-400'
+                  className={`w-full px-3 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-gray-700 text-white placeholder-gray-400 ${
+                    errors.description ? 'border-red-500 focus:border-red-500' : 'border-gray-600 focus:border-blue-500'
                   }`}
                 />
                 {errors.description && <p className="mt-1 text-xs text-red-500">{errors.description}</p>}
@@ -250,7 +250,7 @@ const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSu
           {currentStep === 2 && (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-300 mb-1">
                   Price <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
@@ -261,24 +261,24 @@ const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSu
                     onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
                     min="0"
                     step="0.01"
-                    className={`w-full px-3 py-2 pr-16 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      errors.price ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-blue-400'
+                    className={`w-full px-3 py-2 pr-16 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-white placeholder-gray-400 ${
+                      errors.price ? 'border-red-500 focus:border-red-500' : 'border-gray-600 focus:border-blue-500'
                     }`}
                   />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-500">
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-300">
                     LKR
                   </div>
                 </div>
                 {formData.price > 0 && (
-                  <p className="mt-1 text-xs text-green-600 font-medium">
+                  <p className="mt-1 text-xs text-green-400 font-medium">
                     {formatPriceLKR(formData.price)}
                   </p>
                 )}
-                {errors.price && <p className="mt-1 text-xs text-red-500">{errors.price}</p>}
+                {errors.price && <p className="mt-1 text-xs text-red-400">{errors.price}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-300 mb-1">
                   Duration <span className="text-red-500">*</span>
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -289,12 +289,12 @@ const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSu
                       onClick={() => setFormData(prev => ({ ...prev, duration: option.value as PackageData['duration'] }))}
                       className={`flex items-center gap-2 p-2 rounded-lg border-2 transition-all ${
                         formData.duration === option.value
-                          ? 'border-blue-500 bg-blue-50 text-blue-700'
-                          : 'border-gray-200 hover:border-gray-300'
+                          ? 'border-blue-500 bg-blue-900 text-blue-200'
+                          : 'border-gray-600 hover:border-gray-500 bg-gray-700 text-gray-300 hover:bg-gray-600'
                       }`}
                     >
                       <option.icon className={`h-4 w-4 ${
-                        formData.duration === option.value ? 'text-blue-500' : 'text-gray-400'
+                        formData.duration === option.value ? 'text-blue-400' : 'text-gray-400'
                       }`} />
                       <span className="text-sm font-medium">{option.label}</span>
                     </button>
@@ -308,7 +308,7 @@ const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSu
           {currentStep === 3 && (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-300 mb-1">
                   Features <span className="text-red-500">*</span>
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -319,32 +319,32 @@ const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSu
                       onClick={() => handleFeatureToggle(option.value)}
                       className={`flex items-center gap-2 p-2 rounded-lg border-2 transition-all ${
                         formData.features.includes(option.value)
-                          ? 'border-blue-500 bg-blue-50 text-blue-700'
-                          : 'border-gray-200 hover:border-gray-300'
+                          ? 'border-blue-500 bg-blue-900 text-blue-200'
+                          : 'border-gray-600 hover:border-gray-500 bg-gray-700 text-gray-300 hover:bg-gray-600'
                       }`}
                     >
                       <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
                         formData.features.includes(option.value)
                           ? 'bg-blue-500 border-blue-500'
-                          : 'border-gray-300'
+                          : 'border-gray-600'
                       }`}>
                         {formData.features.includes(option.value) && (
                           <Check className="h-3 w-3 text-white" />
                         )}
                       </div>
                       <option.icon className={`h-4 w-4 ${
-                        formData.features.includes(option.value) ? 'text-blue-500' : 'text-gray-400'
+                        formData.features.includes(option.value) ? 'text-blue-400' : 'text-gray-400'
                       }`} />
                       <span className="text-sm font-medium">{option.value}</span>
                     </button>
                   ))}
                 </div>
-                {errors.features && <p className="mt-1 text-xs text-red-500">{errors.features}</p>}
+                {errors.features && <p className="mt-1 text-xs text-red-400">{errors.features}</p>}
               </div>
 
               {formData.features.includes('Other') && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-300 mb-1">
                     Custom Feature <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -352,11 +352,11 @@ const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSu
                     placeholder="Enter custom feature"
                     value={formData.customFeature}
                     onChange={(e) => setFormData(prev => ({ ...prev, customFeature: e.target.value }))}
-                    className={`w-full px-3 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      errors.customFeature ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-blue-400'
+                    className={`w-full px-3 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-white placeholder-gray-400 ${
+                      errors.customFeature ? 'border-red-500 focus:border-red-500' : 'border-gray-600 focus:border-blue-500'
                     }`}
                   />
-                  {errors.customFeature && <p className="mt-1 text-xs text-red-500">{errors.customFeature}</p>}
+                  {errors.customFeature && <p className="mt-1 text-xs text-red-400">{errors.customFeature}</p>}
                 </div>
               )}
             </div>
@@ -365,13 +365,13 @@ const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSu
       </div>
 
       {/* Footer */}
-      <div className="fixed bottom-0 inset-x-0 bg-white/80 backdrop-blur-sm border-t border-gray-200">
+      <div className="fixed bottom-0 inset-x-0 bg-gray-800 border-t border-gray-700">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14">
             <button
               type="button"
               onClick={currentStep === 1 ? onClose : handleBack}
-              className="flex items-center gap-2 px-4 py-1.5 rounded-lg border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all font-medium text-sm"
+              className="flex items-center gap-2 px-4 py-1.5 rounded-lg border-2 border-gray-600 text-gray-300 hover:bg-gray-700 hover:border-gray-500 transition-all font-medium text-sm"
             >
               <ArrowLeft className="h-4 w-4" />
               {currentStep === 1 ? 'Cancel' : 'Back'}
