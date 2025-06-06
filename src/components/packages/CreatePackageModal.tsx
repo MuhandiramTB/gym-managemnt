@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import { X, ChevronDown, Check, Star, Clock, Users, Dumbbell } from 'lucide-react';
+import { X, ChevronDown, Check, Star, Clock, Users, Dumbbell, ArrowLeft, ArrowRight, RotateCcw } from 'lucide-react';
 
 interface PackageData {
   name: string;
@@ -37,49 +37,67 @@ const DURATION_OPTIONS = [
 ];
 
 const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSubmit }) => {
-  const [formData, setFormData] = useState<PackageData & { customFeature: string }>({
+  const [currentStep, setCurrentStep] = useState(1);
+  const initialFormData: PackageData & { customFeature: string } = {
     name: '',
     description: '',
     price: 0,
-    duration: 'Monthly',
+    duration: 'Monthly' as const,
     features: [],
     customFeature: '',
     status: 'active'
-  });
-
+  };
+  
+  const [formData, setFormData] = useState<PackageData & { customFeature: string }>(initialFormData);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isDurationOpen, setIsDurationOpen] = useState(false);
-  const [isFeaturesOpen, setIsFeaturesOpen] = useState(false);
 
-  const validateForm = (): boolean => {
+  const resetForm = () => {
+    if (window.confirm('Are you sure you want to reset all fields?')) {
+      setFormData(initialFormData);
+      setCurrentStep(1);
+      setErrors({});
+    }
+  };
+
+  const validateStep = (step: number): boolean => {
     const newErrors: Record<string, string> = {};
     
-    if (!formData.name.trim()) {
-      newErrors.name = 'Package name is required';
-    }
-    
-    if (!formData.description.trim()) {
-      newErrors.description = 'Description is required';
-    }
-    
-    if (formData.price <= 0) {
-      newErrors.price = 'Price must be greater than 0';
-    }
-    
-    if (formData.features.length === 0) {
-      newErrors.features = 'At least one feature must be selected';
-    }
-    
-    if (formData.features.includes('Other') && !formData.customFeature.trim()) {
-      newErrors.customFeature = 'Custom feature is required when "Other" is selected';
+    if (step === 1) {
+      if (!formData.name.trim()) {
+        newErrors.name = 'Package name is required';
+      }
+      if (!formData.description.trim()) {
+        newErrors.description = 'Description is required';
+      }
+    } else if (step === 2) {
+      if (formData.price <= 0) {
+        newErrors.price = 'Price must be greater than 0';
+      }
+    } else if (step === 3) {
+      if (formData.features.length === 0) {
+        newErrors.features = 'At least one feature must be selected';
+      }
+      if (formData.features.includes('Other') && !formData.customFeature.trim()) {
+        newErrors.customFeature = 'Custom feature is required when "Other" is selected';
+      }
     }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleNext = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep(prev => Math.min(prev + 1, 3));
+    }
+  };
+
+  const handleBack = () => {
+    setCurrentStep(prev => Math.max(prev - 1, 1));
+  };
+
   const handleSubmit = () => {
-    if (!validateForm()) {
+    if (!validateStep(3)) {
       return;
     }
     
@@ -116,66 +134,112 @@ const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSu
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity" onClick={onClose} />
-        
-        <div className="relative w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all">
-          {/* Header */}
-          <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 px-6 py-6">
-            <div className="absolute inset-0 bg-black/10 backdrop-blur-sm" />
-            <div className="relative flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-white">Create New Package</h2>
+    <div className="fixed inset-0 z-50 bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 overflow-y-auto">
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 shadow-lg">
+        <div className="relative">
+          <div className="absolute inset-0 bg-black/10 backdrop-blur-sm"></div>
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div className="flex items-center justify-between h-14">
+              <div className="flex items-center">
+                <button
+                  onClick={onClose}
+                  className="mr-4 p-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition-colors"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+                <h1 className="text-xl font-semibold text-white">Create New Package</h1>
+              </div>
               <button
-                onClick={onClose}
-                className="rounded-full bg-white/20 p-2 text-white hover:bg-white/30 transition-colors"
+                onClick={resetForm}
+                className="p-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition-colors flex items-center gap-2"
+                title="Reset form"
               >
-                <X className="h-5 w-5" />
+                <RotateCcw className="h-5 w-5" />
               </button>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Form Content */}
-          <div className="space-y-6 p-6">
-            {/* Package Name */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Package Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                placeholder="Enter package name"
-                value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                className={`w-full px-4 py-3 rounded-xl border-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.name ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-blue-400'
+      {/* Progress Bar */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center" aria-hidden="true">
+            <div className="w-full border-t-2 border-gray-200/50" />
+          </div>
+          <div className="relative flex justify-between">
+            {[1, 2, 3].map((step) => (
+              <button
+                key={step}
+                onClick={() => step < currentStep && setCurrentStep(step)}
+                className={`flex items-center ${
+                  step <= currentStep ? 'text-blue-600 cursor-pointer' : 'text-gray-400 cursor-not-allowed'
                 }`}
-              />
-              {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
-            </div>
+              >
+                <div
+                  className={`rounded-full transition-colors flex items-center justify-center w-7 h-7 ${
+                    step <= currentStep 
+                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+                      : 'bg-white border-2 border-gray-300'
+                  }`}
+                >
+                  {step}
+                </div>
+                <span className="ml-2 text-xs font-medium">
+                  {step === 1 ? 'Basic Info' : step === 2 ? 'Pricing' : 'Features'}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
-            {/* Description */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Description <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                placeholder="Enter package description"
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                rows={3}
-                className={`w-full px-4 py-3 rounded-xl border-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
-                  errors.description ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-blue-400'
-                }`}
-              />
-              {errors.description && <p className="mt-1 text-sm text-red-500">{errors.description}</p>}
-            </div>
-
-            {/* Price and Duration */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Price */}
+      {/* Form Content */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-xl p-4">
+          {/* Step 1: Basic Info */}
+          {currentStep === 1 && (
+            <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Package Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter package name"
+                  value={formData.name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  className={`w-full px-3 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    errors.name ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-blue-400'
+                  }`}
+                />
+                {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Description <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  placeholder="Enter package description"
+                  value={formData.description}
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  rows={3}
+                  className={`w-full px-3 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
+                    errors.description ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-blue-400'
+                  }`}
+                />
+                {errors.description && <p className="mt-1 text-xs text-red-500">{errors.description}</p>}
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Pricing */}
+          {currentStep === 2 && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
                   Price <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
@@ -186,7 +250,7 @@ const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSu
                     onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
                     min="0"
                     step="0.01"
-                    className={`w-full px-4 py-3 pr-16 rounded-xl border-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    className={`w-full px-3 py-2 pr-16 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       errors.price ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-blue-400'
                     }`}
                   />
@@ -195,166 +259,120 @@ const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSu
                   </div>
                 </div>
                 {formData.price > 0 && (
-                  <p className="mt-1 text-sm text-green-600 font-medium">
+                  <p className="mt-1 text-xs text-green-600 font-medium">
                     {formatPriceLKR(formData.price)}
                   </p>
                 )}
-                {errors.price && <p className="mt-1 text-sm text-red-500">{errors.price}</p>}
+                {errors.price && <p className="mt-1 text-xs text-red-500">{errors.price}</p>}
               </div>
 
-              {/* Duration Dropdown */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
                   Duration <span className="text-red-500">*</span>
                 </label>
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() => setIsDurationOpen(!isDurationOpen)}
-                    className="w-full px-4 py-3 text-left rounded-xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all bg-white hover:bg-gray-50"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-gray-400" />
-                        <span className="text-gray-900">
-                          {DURATION_OPTIONS.find(opt => opt.value === formData.duration)?.label || 'Select duration'}
-                        </span>
-                      </div>
-                      <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isDurationOpen ? 'rotate-180' : ''}`} />
-                    </div>
-                  </button>
-                  
-                  {isDurationOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-gray-200 rounded-xl shadow-lg z-10 max-h-60 overflow-auto">
-                      {DURATION_OPTIONS.map((option) => (
-                        <button
-                          key={option.value}
-                          type="button"
-                          onClick={() => {
-                            setFormData(prev => ({ ...prev, duration: option.value as PackageData['duration'] }));
-                            setIsDurationOpen(false);
-                          }}
-                          className="w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl"
-                        >
-                          <option.icon className="h-4 w-4 text-blue-500" />
-                          <span className="text-gray-900">{option.label}</span>
-                          {formData.duration === option.value && (
-                            <Check className="h-4 w-4 text-blue-500 ml-auto" />
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {DURATION_OPTIONS.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, duration: option.value as PackageData['duration'] }))}
+                      className={`flex items-center gap-2 p-2 rounded-lg border-2 transition-all ${
+                        formData.duration === option.value
+                          ? 'border-blue-500 bg-blue-50 text-blue-700'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <option.icon className={`h-4 w-4 ${
+                        formData.duration === option.value ? 'text-blue-500' : 'text-gray-400'
+                      }`} />
+                      <span className="text-sm font-medium">{option.label}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
+          )}
 
-            {/* Features Multi-Select */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Features <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setIsFeaturesOpen(!isFeaturesOpen)}
-                  className={`w-full px-4 py-3 text-left rounded-xl border-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white hover:bg-gray-50 ${
-                    errors.features ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-blue-400'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-900">
-                      {formData.features.length > 0 
-                        ? `${formData.features.length} feature${formData.features.length > 1 ? 's' : ''} selected`
-                        : 'Select features'
-                      }
-                    </span>
-                    <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isFeaturesOpen ? 'rotate-180' : ''}`} />
-                  </div>
-                </button>
-                
-                {isFeaturesOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-gray-200 rounded-xl shadow-lg z-10 max-h-60 overflow-auto">
-                    {FEATURE_OPTIONS.map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() => handleFeatureToggle(option.value)}
-                        className="w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors flex items-center gap-3 first:rounded-t-xl last:rounded-b-xl"
-                      >
-                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                          formData.features.includes(option.value)
-                            ? 'bg-blue-500 border-blue-500'
-                            : 'border-gray-300'
-                        }`}>
-                          {formData.features.includes(option.value) && (
-                            <Check className="h-3 w-3 text-white" />
-                          )}
-                        </div>
-                        <option.icon className="h-4 w-4 text-blue-500" />
-                        <span className="text-gray-900">{option.value}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-              {errors.features && <p className="mt-1 text-sm text-red-500">{errors.features}</p>}
-              
-              {/* Selected Features */}
-              {formData.features.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {formData.features.map((feature) => (
-                    <span
-                      key={feature}
-                      className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800 border border-blue-200"
+          {/* Step 3: Features */}
+          {currentStep === 3 && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Features <span className="text-red-500">*</span>
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {FEATURE_OPTIONS.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => handleFeatureToggle(option.value)}
+                      className={`flex items-center gap-2 p-2 rounded-lg border-2 transition-all ${
+                        formData.features.includes(option.value)
+                          ? 'border-blue-500 bg-blue-50 text-blue-700'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
                     >
-                      {feature}
-                      <button
-                        type="button"
-                        onClick={() => handleFeatureToggle(feature)}
-                        className="hover:text-blue-900 focus:outline-none"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </span>
+                      <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
+                        formData.features.includes(option.value)
+                          ? 'bg-blue-500 border-blue-500'
+                          : 'border-gray-300'
+                      }`}>
+                        {formData.features.includes(option.value) && (
+                          <Check className="h-3 w-3 text-white" />
+                        )}
+                      </div>
+                      <option.icon className={`h-4 w-4 ${
+                        formData.features.includes(option.value) ? 'text-blue-500' : 'text-gray-400'
+                      }`} />
+                      <span className="text-sm font-medium">{option.value}</span>
+                    </button>
                   ))}
                 </div>
-              )}
-              
-              {/* Custom Feature Input */}
+                {errors.features && <p className="mt-1 text-xs text-red-500">{errors.features}</p>}
+              </div>
+
               {formData.features.includes('Other') && (
-                <div className="mt-3">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Custom Feature <span className="text-red-500">*</span>
+                  </label>
                   <input
                     type="text"
                     placeholder="Enter custom feature"
                     value={formData.customFeature}
                     onChange={(e) => setFormData(prev => ({ ...prev, customFeature: e.target.value }))}
-                    className={`w-full px-4 py-3 rounded-xl border-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    className={`w-full px-3 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       errors.customFeature ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-blue-400'
                     }`}
                   />
-                  {errors.customFeature && <p className="mt-1 text-sm text-red-500">{errors.customFeature}</p>}
+                  {errors.customFeature && <p className="mt-1 text-xs text-red-500">{errors.customFeature}</p>}
                 </div>
               )}
             </div>
+          )}
+        </div>
+      </div>
 
-            {/* Action Buttons */}
-            <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-6 py-2 rounded-xl border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all font-medium"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleSubmit}
-                className="px-6 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-all font-medium shadow-lg hover:shadow-xl"
-              >
-                Create Package
-              </button>
-            </div>
+      {/* Footer */}
+      <div className="fixed bottom-0 inset-x-0 bg-white/80 backdrop-blur-sm border-t border-gray-200">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-14">
+            <button
+              type="button"
+              onClick={currentStep === 1 ? onClose : handleBack}
+              className="flex items-center gap-2 px-4 py-1.5 rounded-lg border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all font-medium text-sm"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              {currentStep === 1 ? 'Cancel' : 'Back'}
+            </button>
+            <button
+              type="button"
+              onClick={currentStep === 3 ? handleSubmit : handleNext}
+              className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-all font-medium shadow-lg hover:shadow-xl text-sm"
+            >
+              {currentStep === 3 ? 'Create Package' : 'Next'}
+              {currentStep !== 3 && <ArrowRight className="h-4 w-4" />}
+            </button>
           </div>
         </div>
       </div>
