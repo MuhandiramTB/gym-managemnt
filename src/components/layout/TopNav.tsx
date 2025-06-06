@@ -21,14 +21,14 @@ const branches = [
 
 const TopNav: React.FC = () => {
   return (
-    <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center border-b border-gray-200 bg-white px-4 shadow-sm">
+    <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center border-b border-gray-700/50 bg-gradient-to-r from-gray-900 to-gray-800 px-4 shadow-lg">
       <div className="flex-1" /> {/* Spacer */}
       {/* Right side navigation */}
       <div className="flex items-center space-x-6">
         {/* Branch Selector */}
         <Menu as="div" className="relative">
-          <Menu.Button className="flex items-center gap-x-1 text-sm font-medium leading-6 text-gray-900">
-            <BuildingOfficeIcon className="h-5 w-5 text-gray-500" aria-hidden="true" />
+          <Menu.Button className="flex items-center gap-x-1 rounded-lg px-3 py-2 text-sm font-medium leading-6 text-gray-300 hover:bg-gray-700/50 hover:text-white transition-colors duration-200">
+            <BuildingOfficeIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
             <span>Main Branch</span>
             <ChevronDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
           </Menu.Button>
@@ -42,15 +42,15 @@ const TopNav: React.FC = () => {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="absolute right-0 z-10 mt-2.5 w-48 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+            <Menu.Items className="absolute right-0 z-10 mt-2.5 w-48 origin-top-right rounded-lg bg-gray-800 py-2 shadow-xl ring-1 ring-gray-700/50 focus:outline-none">
               {branches.map((branch) => (
                 <Menu.Item key={branch.id}>
                   {({ active }) => (
                     <button
                       className={`
-                        block w-full text-left px-3 py-1 text-sm leading-6
-                        ${active ? 'bg-gray-50' : ''}
-                        ${branch.name === 'Main Branch' ? 'text-blue-600' : 'text-gray-900'}
+                        block w-full text-left px-3 py-2 text-sm leading-6 transition-colors duration-200
+                        ${active ? 'bg-gray-700/50' : ''}
+                        ${branch.name === 'Main Branch' ? 'text-indigo-400' : 'text-gray-300'}
                       `}
                     >
                       {branch.name}
@@ -65,9 +65,9 @@ const TopNav: React.FC = () => {
         {/* Notifications */}
         <button
           type="button"
-          className="relative rounded-full bg-white p-1.5 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="relative rounded-lg bg-gray-800 p-2 text-gray-400 hover:bg-gray-700/50 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >
-          <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+          <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white shadow-lg">
             3
           </span>
           <BellIcon className="h-6 w-6" aria-hidden="true" />
@@ -75,8 +75,8 @@ const TopNav: React.FC = () => {
 
         {/* Profile dropdown */}
         <Menu as="div" className="relative">
-          <Menu.Button className="flex items-center gap-x-1 text-sm font-medium leading-6 text-gray-900">
-            <UserCircleIcon className="h-5 w-5 text-gray-500" aria-hidden="true" />
+          <Menu.Button className="flex items-center gap-x-1 rounded-lg px-3 py-2 text-sm font-medium leading-6 text-gray-300 hover:bg-gray-700/50 hover:text-white transition-colors duration-200">
+            <UserCircleIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
             <span>John Smith</span>
             <ChevronDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
           </Menu.Button>
@@ -90,16 +90,16 @@ const TopNav: React.FC = () => {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+            <Menu.Items className="absolute right-0 z-10 mt-2.5 w-48 origin-top-right rounded-lg bg-gray-800 py-2 shadow-xl ring-1 ring-gray-700/50 focus:outline-none">
               {userNavigation.map((item) => (
                 <Menu.Item key={item.name}>
                   {({ active }) => (
                     <Link
                       to={item.href}
                       className={`
-                        block w-full text-left px-3 py-1 text-sm leading-6
-                        ${active ? 'bg-gray-50' : ''}
-                        ${item.name === 'Sign out' ? 'text-red-600' : 'text-gray-900'}
+                        block w-full text-left px-3 py-2 text-sm leading-6 transition-colors duration-200
+                        ${active ? 'bg-gray-700/50' : ''}
+                        ${item.name === 'Sign out' ? 'text-red-400' : 'text-gray-300'}
                       `}
                     >
                       {item.name}
