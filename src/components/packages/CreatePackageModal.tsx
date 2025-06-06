@@ -14,6 +14,7 @@ interface CreatePackageModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (packageData: PackageData) => void;
+  initialData?: PackageData & { id: string } | null;
 }
 
 const FEATURE_OPTIONS = [
@@ -36,7 +37,7 @@ const DURATION_OPTIONS = [
   { value: 'Annually', label: 'Annually (12 months)', icon: Clock },
 ];
 
-const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSubmit }) => {
+const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSubmit, initialData }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const initialFormData: PackageData & { customFeature: string } = {
     name: '',
@@ -48,12 +49,20 @@ const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSu
     status: 'active'
   };
   
-  const [formData, setFormData] = useState<PackageData & { customFeature: string }>(initialFormData);
+  const [formData, setFormData] = useState<PackageData & { customFeature: string }>(() => {
+    if (initialData) {
+      return {
+        ...initialData,
+        customFeature: ''
+      };
+    }
+    return initialFormData;
+  });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const resetForm = () => {
     if (window.confirm('Are you sure you want to reset all fields?')) {
-      setFormData(initialFormData);
+      setFormData(initialData ? { ...initialData, customFeature: '' } : initialFormData);
       setCurrentStep(1);
       setErrors({});
     }
@@ -148,7 +157,9 @@ const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSu
                 >
                   <X className="h-5 w-5" />
                 </button>
-                <h1 className="text-xl font-semibold text-white">Create New Package</h1>
+                <h1 className="text-xl font-semibold text-white">
+                  {initialData ? 'Edit Package' : 'Create New Package'}
+                </h1>
               </div>
               <button
                 onClick={resetForm}
@@ -197,7 +208,7 @@ const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSu
 
       {/* Form Content */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-xl p-4">
+        <div className="bg-white/10 backdrop-blur-sm rounded-xl shadow-xl p-4">
           {/* Step 1: Basic Info */}
           {currentStep === 1 && (
             <div className="space-y-4">
@@ -370,7 +381,7 @@ const CreatePackageModal: FC<CreatePackageModalProps> = ({ isOpen, onClose, onSu
               onClick={currentStep === 3 ? handleSubmit : handleNext}
               className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-all font-medium shadow-lg hover:shadow-xl text-sm"
             >
-              {currentStep === 3 ? 'Create Package' : 'Next'}
+              {currentStep === 3 ? (initialData ? 'Update Package' : 'Create Package') : 'Next'}
               {currentStep !== 3 && <ArrowRight className="h-4 w-4" />}
             </button>
           </div>

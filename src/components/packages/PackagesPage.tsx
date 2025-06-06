@@ -8,7 +8,7 @@ interface Package {
   name: string;
   description: string;
   price: number;
-  duration: string;
+  duration: 'Daily' | 'Weekly' | 'Monthly' | 'Quarterly' | 'Annually';
   features: string[];
   status: 'active' | 'inactive';
 }
@@ -20,7 +20,7 @@ const PackagesPage: FC = () => {
       name: 'Basic Membership',
       description: 'Access to gym equipment and basic facilities',
       price: 49.99,
-      duration: 'Monthly',
+      duration: 'Monthly' as const,
       features: ['Access to gym equipment', 'Locker room access', 'Basic fitness assessment'],
       status: 'active'
     },
@@ -29,13 +29,14 @@ const PackagesPage: FC = () => {
       name: 'Premium Package',
       description: 'Full access to all facilities including pool and spa',
       price: 89.99,
-      duration: 'Monthly',
+      duration: 'Monthly' as const,
       features: ['All Basic features', 'Pool access', 'Spa access', 'Personal trainer session'],
       status: 'active'
     }
   ]);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingPackage, setEditingPackage] = useState<Package | null>(null);
 
   const handleCreatePackage = (packageData: Omit<Package, 'id'>) => {
     const newPackage: Package = {
@@ -45,8 +46,26 @@ const PackagesPage: FC = () => {
     setPackages(prev => [...prev, newPackage]);
   };
 
+  const handleEditPackage = (packageData: Omit<Package, 'id'>) => {
+    if (editingPackage) {
+      setPackages(prev => prev.map(pkg => 
+        pkg.id === editingPackage.id ? { ...packageData, id: pkg.id } : pkg
+      ));
+    }
+  };
+
   const handleDeletePackage = (id: string) => {
     setPackages(prev => prev.filter(pkg => pkg.id !== id));
+  };
+
+  const handleEditClick = (pkg: Package) => {
+    setEditingPackage(pkg);
+    setIsCreateModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsCreateModalOpen(false);
+    setEditingPackage(null);
   };
 
   return (
@@ -169,6 +188,7 @@ const PackagesPage: FC = () => {
                       size="xs" 
                       variant="secondary"
                       icon={PencilIcon}
+                      onClick={() => handleEditClick(pkg)}
                       className="rounded-full bg-indigo-500/20 text-indigo-200 hover:bg-indigo-500/30 border-indigo-500/30 hover:scale-105 transition-all duration-200 px-2 py-1 text-[10px] md:text-xs"
                     >
                       Edit
@@ -192,8 +212,9 @@ const PackagesPage: FC = () => {
 
       <CreatePackageModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={handleCreatePackage}
+        onClose={handleModalClose}
+        onSubmit={editingPackage ? handleEditPackage : handleCreatePackage}
+        initialData={editingPackage}
       />
     </div>
   );
