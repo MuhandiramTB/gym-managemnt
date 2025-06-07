@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Cog6ToothIcon,
   BellIcon,
-  UserIcon,
+  UserGroupIcon,
   CreditCardIcon,
   ShieldCheckIcon,
-  DocumentTextIcon,
+  CloudArrowUpIcon,
   GlobeAltIcon,
+  ClockIcon,
+  CalendarIcon,
 } from '@heroicons/react/24/outline';
 
 interface SettingSection {
@@ -32,26 +34,26 @@ const settingSections: SettingSection[] = [
   {
     id: 'users',
     title: 'User Management',
-    icon: UserIcon,
+    icon: UserGroupIcon,
     description: 'Manage user roles and permissions',
   },
   {
     id: 'billing',
-    title: 'Billing Settings',
+    title: 'Billing',
     icon: CreditCardIcon,
-    description: 'Configure payment methods and billing preferences',
+    description: 'Payment and subscription settings',
   },
   {
     id: 'security',
     title: 'Security',
     icon: ShieldCheckIcon,
-    description: 'Security settings and access control',
+    description: 'Security and privacy settings',
   },
   {
     id: 'backup',
     title: 'Backup & Restore',
-    icon: DocumentTextIcon,
-    description: 'Manage system backups and data restoration',
+    icon: CloudArrowUpIcon,
+    description: 'System backup and data recovery',
   },
   {
     id: 'localization',
@@ -62,7 +64,34 @@ const settingSections: SettingSection[] = [
 ];
 
 const SettingsPage: React.FC = () => {
-  const [activeSection, setActiveSection] = useState<string>('general');
+  const [activeSection, setActiveSection] = useState('general');
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true,
+    });
+  };
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
 
   const renderSectionContent = () => {
     switch (activeSection) {
@@ -70,63 +99,31 @@ const SettingsPage: React.FC = () => {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-gray-900">Gym Information</h3>
-              <div className="mt-4 grid grid-cols-1 gap-4">
+              <h3 className="text-lg font-medium text-gray-200">System Settings</h3>
+              <div className="mt-4 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Gym Name</label>
+                  <label className="block text-sm font-medium text-gray-300">Gym Name</label>
                   <input
                     type="text"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    defaultValue="My Gym"
+                    className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    defaultValue="Fitness Pro Gym"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Business Hours</label>
-                  <div className="mt-1 grid grid-cols-2 gap-4">
-                    <input
-                      type="time"
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                      defaultValue="06:00"
-                    />
-                    <input
-                      type="time"
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                      defaultValue="22:00"
-                    />
-                  </div>
+                  <label className="block text-sm font-medium text-gray-300">Contact Email</label>
+                  <input
+                    type="email"
+                    className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    defaultValue="contact@fitnesspro.com"
+                  />
                 </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-medium text-gray-900">System Preferences</h3>
-              <div className="mt-4 space-y-4">
                 <div className="flex items-center">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
                     defaultChecked
                   />
-                  <label className="ml-2 block text-sm text-gray-900">
-                    Enable automatic check-in reminders
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    defaultChecked
-                  />
-                  <label className="ml-2 block text-sm text-gray-900">
-                    Send payment reminders
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <label className="ml-2 block text-sm text-gray-900">
+                  <label className="ml-2 block text-sm text-gray-300">
                     Enable maintenance mode
                   </label>
                 </div>
@@ -139,60 +136,26 @@ const SettingsPage: React.FC = () => {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-gray-900">Email Notifications</h3>
+              <h3 className="text-lg font-medium text-gray-200">Email Notifications</h3>
               <div className="mt-4 space-y-4">
                 <div className="flex items-center">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
                     defaultChecked
                   />
-                  <label className="ml-2 block text-sm text-gray-900">
-                    Subscription expiration alerts
+                  <label className="ml-2 block text-sm text-gray-300">
+                    Send email notifications for new members
                   </label>
                 </div>
                 <div className="flex items-center">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
                     defaultChecked
                   />
-                  <label className="ml-2 block text-sm text-gray-900">
-                    Payment confirmations
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <label className="ml-2 block text-sm text-gray-900">
-                    System maintenance alerts
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-medium text-gray-900">SMS Notifications</h3>
-              <div className="mt-4 space-y-4">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    defaultChecked
-                  />
-                  <label className="ml-2 block text-sm text-gray-900">
-                    Class reminders
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <label className="ml-2 block text-sm text-gray-900">
-                    Payment due reminders
+                  <label className="ml-2 block text-sm text-gray-300">
+                    Send payment reminders
                   </label>
                 </div>
               </div>
@@ -204,49 +167,24 @@ const SettingsPage: React.FC = () => {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-gray-900">User Roles</h3>
+              <h3 className="text-lg font-medium text-gray-200">User Roles</h3>
               <div className="mt-4 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Default Role</label>
-                  <select className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    <option>Staff</option>
-                    <option>Manager</option>
+                  <label className="block text-sm font-medium text-gray-300">Default Role</label>
+                  <select className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     <option>Admin</option>
+                    <option>Manager</option>
+                    <option>Staff</option>
                   </select>
                 </div>
                 <div className="flex items-center">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
                     defaultChecked
                   />
-                  <label className="ml-2 block text-sm text-gray-900">
-                    Require two-factor authentication for admins
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-medium text-gray-900">Access Control</h3>
-              <div className="mt-4 space-y-4">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    defaultChecked
-                  />
-                  <label className="ml-2 block text-sm text-gray-900">
-                    Restrict access to business hours
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <label className="ml-2 block text-sm text-gray-900">
-                    Enable IP-based access restrictions
+                  <label className="ml-2 block text-sm text-gray-300">
+                    Allow role-based access control
                   </label>
                 </div>
               </div>
@@ -258,11 +196,11 @@ const SettingsPage: React.FC = () => {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-gray-900">Payment Settings</h3>
+              <h3 className="text-lg font-medium text-gray-200">Payment Settings</h3>
               <div className="mt-4 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Default Currency</label>
-                  <select className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                  <label className="block text-sm font-medium text-gray-300">Default Currency</label>
+                  <select className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     <option>USD</option>
                     <option>EUR</option>
                     <option>GBP</option>
@@ -271,10 +209,10 @@ const SettingsPage: React.FC = () => {
                 <div className="flex items-center">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
                     defaultChecked
                   />
-                  <label className="ml-2 block text-sm text-gray-900">
+                  <label className="ml-2 block text-sm text-gray-300">
                     Enable automatic billing
                   </label>
                 </div>
@@ -282,23 +220,23 @@ const SettingsPage: React.FC = () => {
             </div>
 
             <div>
-              <h3 className="text-lg font-medium text-gray-900">Tax Settings</h3>
+              <h3 className="text-lg font-medium text-gray-200">Tax Settings</h3>
               <div className="mt-4 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Tax Rate (%)</label>
+                  <label className="block text-sm font-medium text-gray-300">Tax Rate (%)</label>
                   <input
                     type="number"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     defaultValue="20"
                   />
                 </div>
                 <div className="flex items-center">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
                     defaultChecked
                   />
-                  <label className="ml-2 block text-sm text-gray-900">
+                  <label className="ml-2 block text-sm text-gray-300">
                     Include tax in displayed prices
                   </label>
                 </div>
@@ -311,33 +249,33 @@ const SettingsPage: React.FC = () => {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-gray-900">Password Policy</h3>
+              <h3 className="text-lg font-medium text-gray-200">Password Policy</h3>
               <div className="mt-4 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Minimum Password Length</label>
+                  <label className="block text-sm font-medium text-gray-300">Minimum Password Length</label>
                   <input
                     type="number"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     defaultValue="8"
                   />
                 </div>
                 <div className="flex items-center">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
                     defaultChecked
                   />
-                  <label className="ml-2 block text-sm text-gray-900">
+                  <label className="ml-2 block text-sm text-gray-300">
                     Require special characters
                   </label>
                 </div>
                 <div className="flex items-center">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
                     defaultChecked
                   />
-                  <label className="ml-2 block text-sm text-gray-900">
+                  <label className="ml-2 block text-sm text-gray-300">
                     Require numbers
                   </label>
                 </div>
@@ -345,23 +283,23 @@ const SettingsPage: React.FC = () => {
             </div>
 
             <div>
-              <h3 className="text-lg font-medium text-gray-900">Session Settings</h3>
+              <h3 className="text-lg font-medium text-gray-200">Session Settings</h3>
               <div className="mt-4 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Session Timeout (minutes)</label>
+                  <label className="block text-sm font-medium text-gray-300">Session Timeout (minutes)</label>
                   <input
                     type="number"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     defaultValue="30"
                   />
                 </div>
                 <div className="flex items-center">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
                     defaultChecked
                   />
-                  <label className="ml-2 block text-sm text-gray-900">
+                  <label className="ml-2 block text-sm text-gray-300">
                     Enable session activity logging
                   </label>
                 </div>
@@ -374,21 +312,21 @@ const SettingsPage: React.FC = () => {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-gray-900">Backup Schedule</h3>
+              <h3 className="text-lg font-medium text-gray-200">Backup Schedule</h3>
               <div className="mt-4 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Backup Frequency</label>
-                  <select className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                  <label className="block text-sm font-medium text-gray-300">Backup Frequency</label>
+                  <select className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     <option>Daily</option>
                     <option>Weekly</option>
                     <option>Monthly</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Backup Time</label>
+                  <label className="block text-sm font-medium text-gray-300">Backup Time</label>
                   <input
                     type="time"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     defaultValue="02:00"
                   />
                 </div>
@@ -396,23 +334,23 @@ const SettingsPage: React.FC = () => {
             </div>
 
             <div>
-              <h3 className="text-lg font-medium text-gray-900">Backup Storage</h3>
+              <h3 className="text-lg font-medium text-gray-200">Backup Storage</h3>
               <div className="mt-4 space-y-4">
                 <div className="flex items-center">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
                     defaultChecked
                   />
-                  <label className="ml-2 block text-sm text-gray-900">
+                  <label className="ml-2 block text-sm text-gray-300">
                     Enable cloud backup
                   </label>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Retention Period (days)</label>
+                  <label className="block text-sm font-medium text-gray-300">Retention Period (days)</label>
                   <input
                     type="number"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     defaultValue="30"
                   />
                 </div>
@@ -425,11 +363,11 @@ const SettingsPage: React.FC = () => {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-gray-900">Language Settings</h3>
+              <h3 className="text-lg font-medium text-gray-200">Language Settings</h3>
               <div className="mt-4 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Default Language</label>
-                  <select className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                  <label className="block text-sm font-medium text-gray-300">Default Language</label>
+                  <select className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     <option>English</option>
                     <option>Spanish</option>
                     <option>French</option>
@@ -439,10 +377,10 @@ const SettingsPage: React.FC = () => {
                 <div className="flex items-center">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
                     defaultChecked
                   />
-                  <label className="ml-2 block text-sm text-gray-900">
+                  <label className="ml-2 block text-sm text-gray-300">
                     Allow users to change language
                   </label>
                 </div>
@@ -450,11 +388,11 @@ const SettingsPage: React.FC = () => {
             </div>
 
             <div>
-              <h3 className="text-lg font-medium text-gray-900">Regional Settings</h3>
+              <h3 className="text-lg font-medium text-gray-200">Regional Settings</h3>
               <div className="mt-4 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Time Zone</label>
-                  <select className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                  <label className="block text-sm font-medium text-gray-300">Time Zone</label>
+                  <select className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     <option>UTC</option>
                     <option>EST</option>
                     <option>PST</option>
@@ -462,8 +400,8 @@ const SettingsPage: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Date Format</label>
-                  <select className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                  <label className="block text-sm font-medium text-gray-300">Date Format</label>
+                  <select className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     <option>MM/DD/YYYY</option>
                     <option>DD/MM/YYYY</option>
                     <option>YYYY-MM-DD</option>
@@ -480,10 +418,22 @@ const SettingsPage: React.FC = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 bg-[#181F2A] min-h-screen">
+      {/* Date and Time Display */}
+      <div className="flex items-center justify-end space-x-4 mb-6 text-gray-300">
+        <div className="flex items-center space-x-2">
+          <CalendarIcon className="h-5 w-5" />
+          <span>{formatDate(currentTime)}</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <ClockIcon className="h-5 w-5" />
+          <span>{formatTime(currentTime)}</span>
+        </div>
+      </div>
+
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-gray-100">Settings</h1>
+        <p className="mt-1 text-sm text-gray-400">
           Manage your gym management system settings and preferences
         </p>
       </div>
@@ -497,18 +447,18 @@ const SettingsPage: React.FC = () => {
                 key={section.id}
                 onClick={() => setActiveSection(section.id)}
                 className={`
-                  w-full flex items-center px-3 py-2 text-sm font-medium rounded-md
+                  w-full flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200
                   ${
                     activeSection === section.id
-                      ? 'bg-gray-100 text-gray-900'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      ? 'bg-[#232B3B] text-indigo-400'
+                      : 'text-gray-400 hover:bg-[#232B3B] hover:text-gray-200'
                   }
                 `}
               >
                 <section.icon
                   className={`
                     mr-3 h-5 w-5
-                    ${activeSection === section.id ? 'text-gray-500' : 'text-gray-400'}
+                    ${activeSection === section.id ? 'text-indigo-400' : 'text-gray-400'}
                   `}
                 />
                 {section.title}
@@ -519,18 +469,18 @@ const SettingsPage: React.FC = () => {
 
         {/* Content */}
         <div className="col-span-9">
-          <div className="bg-white shadow rounded-lg p-6">
+          <div className="bg-[#232B3B] shadow-lg rounded-lg p-6">
             {renderSectionContent()}
-            <div className="mt-6 flex justify-end">
+            <div className="mt-6 flex justify-end space-x-3">
               <button
                 type="button"
-                className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-600 rounded-md text-sm font-medium text-gray-300 hover:bg-[#181F2A] transition-colors duration-200"
               >
                 Cancel
               </button>
               <button
                 type="button"
-                className="ml-3 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200"
               >
                 Save Changes
               </button>
