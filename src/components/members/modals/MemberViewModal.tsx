@@ -42,14 +42,33 @@ const MemberViewModal: React.FC<MemberViewModalProps> = ({
     onUpdateProgress(member.id, updatedGoals);
   };
 
+  // Helper to handle overlay click
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  // Helper for edit button
+  const handleEditClick = () => {
+    onClose();
+    setTimeout(() => onEdit(member), 0);
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-[#232B3B] rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
+      onClick={handleOverlayClick}
+    >
+      <div className="bg-[#232B3B] rounded-2xl shadow-2xl p-6 w-full max-w-2xl sm:max-w-4xl mx-2 mt-40 transition-all max-h-[90vh] overflow-y-auto"
+        onClick={e => e.stopPropagation()}
+      >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-white">Member Details</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-white"
+            aria-label="Close"
           >
             <XMarkIcon className="h-6 w-6" />
           </button>
@@ -133,9 +152,9 @@ const MemberViewModal: React.FC<MemberViewModalProps> = ({
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 mt-6">
+        <div className="flex flex-wrap justify-end gap-3 mt-6">
           <button
-            onClick={() => onEdit(member)}
+            onClick={handleEditClick}
             className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             Edit Member
@@ -145,6 +164,12 @@ const MemberViewModal: React.FC<MemberViewModalProps> = ({
             className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
           >
             Delete Member
+          </button>
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 rounded-md hover:text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
+          >
+            Close
           </button>
         </div>
       </div>
