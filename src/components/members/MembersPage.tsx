@@ -1,97 +1,67 @@
-import { FC, useState, useEffect } from 'react';
-import { Member, MemberFormData, WorkoutPlan, FitnessGoal } from './types';
-import CreateMemberModal from './sections/CreateMemberModal';
-import ViewMemberModal from './sections/ViewMemberModal';
+import React, { useState, useEffect } from 'react';
+import { Member, MemberFormData } from './types';
+import { ProgressPhoto } from '../progress/ProgressPhotos';
 import MembersHeader from './sections/MembersHeader';
 import MembersSearch from './sections/MembersSearch';
 import MembersTable from './sections/MembersTable';
+import MemberFormModal from './modals/MemberFormModal';
+import MemberViewModal from './modals/MemberViewModal';
+import { v4 as uuidv4 } from 'uuid';
 
-const MembersPage: FC = () => {
+const MembersPage: React.FC = () => {
+  const [members, setMembers] = useState<Member[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [members, setMembers] = useState<Member[]>([
-    {
-      id: 1,
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john.doe@example.com',
-      phone: '+1 234 567 890',
-      membershipType: 'Premium Package',
-      status: 'active',
-      joinDate: '2024-01-15',
-      lastVisit: '2024-03-10',
-      membershipExpiry: '2025-01-15',
-      workoutPlans: [],
-      fitnessGoals: []
-    },
-    {
-      id: 2,
-      firstName: 'Jane',
-      lastName: 'Smith',
-      email: 'jane.smith@example.com',
-      phone: '+1 234 567 891',
-      membershipType: 'Basic Membership',
-      status: 'inactive',
-      joinDate: '2024-02-01',
-      lastVisit: '2024-03-05',
-      membershipExpiry: '2025-02-01',
-      workoutPlans: [],
-      fitnessGoals: []
-    },
-  ]);
 
-  // Check for membership renewals
+  // Check for membership renewals daily
   useEffect(() => {
     const checkRenewals = () => {
-      const thirtyDaysFromNow = new Date();
-      thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+      const today = new Date();
+      const thirtyDaysFromNow = new Date(today);
+      thirtyDaysFromNow.setDate(today.getDate() + 30);
 
-      members.forEach(member => {
+      members.forEach((member) => {
         const expiryDate = new Date(member.membershipExpiry);
-        if (expiryDate <= thirtyDaysFromNow) {
-          // TODO: Implement notification system
-          console.log(`Membership renewal needed for ${member.firstName} ${member.lastName}`);
+        if (expiryDate <= thirtyDaysFromNow && expiryDate > today) {
+          console.log(
+            `Notification: ${member.name}'s membership expires on ${expiryDate.toLocaleDateString()}`
+          );
         }
       });
     };
 
+    // Check immediately and then every 24 hours
     checkRenewals();
-    const interval = setInterval(checkRenewals, 24 * 60 * 60 * 1000); // Check daily
+    const interval = setInterval(checkRenewals, 24 * 60 * 60 * 1000);
+
     return () => clearInterval(interval);
   }, [members]);
 
-  const handleCreateMember = (memberData: MemberFormData) => {
+  const handleCreateMember = (formData: MemberFormData) => {
     const newMember: Member = {
-      ...memberData,
-      id: members.length + 1,
-      joinDate: new Date().toISOString().split('T')[0],
-      lastVisit: new Date().toISOString().split('T')[0],
-      membershipExpiry: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
-      workoutPlans: [],
+      id: uuidv4(),
+      ...formData,
+      lastVisit: undefined,
       fitnessGoals: [],
-      status: 'active'
+      workoutPlans: [],
+      progressPhotos: [],
     };
     setMembers([...members, newMember]);
+    setIsCreateModalOpen(false);
   };
 
-  const handleEditMember = (memberData: MemberFormData) => {
-    if (selectedMember) {
-      const updatedMembers = members.map(member =>
-        member.id === selectedMember.id
-          ? { ...member, ...memberData }
-          : member
-      );
-      setMembers(updatedMembers);
-    }
+  const handleEditMember = (member: Member) => {
+    setMembers(
+      members.map((m) => (m.id === member.id ? { ...m, ...member } : m))
+    );
+    setIsViewModalOpen(false);
   };
 
-  const handleDeleteMember = (id: number) => {
-    if (window.confirm('Are you sure you want to delete this member?')) {
-      setMembers(members.filter(member => member.id !== id));
-    }
+  const handleDeleteMember = (id: string) => {
+    setMembers(members.filter((m) => m.id !== id));
+    setIsViewModalOpen(false);
   };
 
   const handleViewMember = (member: Member) => {
@@ -99,101 +69,101 @@ const MembersPage: FC = () => {
     setIsViewModalOpen(true);
   };
 
-  const handleEditClick = (member: Member) => {
-    setSelectedMember(member);
-    setIsEditModalOpen(true);
-  };
-
-  const handleSaveWorkoutPlan = (memberId: number, plan: WorkoutPlan) => {
-    const updatedMembers = members.map(member =>
-      member.id === memberId
-        ? {
-            ...member,
-            workoutPlans: [...member.workoutPlans, { ...plan, createdAt: new Date().toISOString() }]
-          }
-        : member
+  const handleUpdateProgress = (memberId: string, progress: Member['fitnessGoals']) => {
+    setMembers(
+      members.map((m) =>
+        m.id === memberId ? { ...m, fitnessGoals: progress } : m
+      )
     );
-    setMembers(updatedMembers);
   };
 
-  const handleUpdateProgress = (memberId: number, goalId: string, newValue: number) => {
-    const updatedMembers = members.map(member =>
-      member.id === memberId
-        ? {
-            ...member,
-            fitnessGoals: member.fitnessGoals.map(goal =>
-              goal.id === goalId
-                ? {
-                    ...goal,
-                    current: newValue,
-                    status: newValue >= goal.target ? 'completed' as const : 'in-progress' as const
-                  }
-                : goal
-            )
-          }
-        : member
+  const handleUpdateWorkoutPlan = (memberId: string, workoutPlan: Member['workoutPlans'][0]) => {
+    setMembers(
+      members.map((m) =>
+        m.id === memberId
+          ? {
+              ...m,
+              workoutPlans: m.workoutPlans.map((wp) =>
+                wp.id === workoutPlan.id ? workoutPlan : wp
+              ),
+            }
+          : m
+      )
     );
-    setMembers(updatedMembers);
   };
 
-  const handleAddGoal = (memberId: number, goal: Omit<FitnessGoal, 'id'>) => {
-    const newGoal: FitnessGoal = {
-      ...goal,
-      id: Math.random().toString(36).substr(2, 9),
-      status: 'not-started'
+  const handleAddPhoto = (memberId: string, photo: Omit<ProgressPhoto, 'id'>) => {
+    const newPhoto: ProgressPhoto = {
+      id: uuidv4(),
+      ...photo,
     };
-
-    const updatedMembers = members.map(member =>
-      member.id === memberId
-        ? {
-            ...member,
-            fitnessGoals: [...member.fitnessGoals, newGoal]
-          }
-        : member
+    setMembers(
+      members.map((m) =>
+        m.id === memberId
+          ? {
+              ...m,
+              progressPhotos: [...(m.progressPhotos || []), newPhoto],
+            }
+          : m
+      )
     );
-    setMembers(updatedMembers);
   };
 
-  const filteredMembers = members.filter(member => 
-    member.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    member.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    member.email.toLowerCase().includes(searchQuery.toLowerCase())
+  const handleDeletePhoto = (memberId: string, photoId: string) => {
+    setMembers(
+      members.map((m) =>
+        m.id === memberId
+          ? {
+              ...m,
+              progressPhotos: (m.progressPhotos || []).filter(
+                (p) => p.id !== photoId
+              ),
+            }
+          : m
+      )
+    );
+  };
+
+  const filteredMembers = members.filter(
+    (member) =>
+      member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.phone.includes(searchQuery)
   );
 
   return (
-    <div className="p-6 max-w-7xl mx-auto bg-[#181F2A] min-h-screen">
-      <MembersHeader onAddMember={() => setIsCreateModalOpen(true)} />
-      
-      <MembersSearch 
+    <div className="p-6">
+      <MembersHeader onCreateClick={() => setIsCreateModalOpen(true)} />
+      <MembersSearch
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
       />
-
       <MembersTable
         members={filteredMembers}
-        onViewMember={handleViewMember}
-        onEditMember={handleEditClick}
-        onDeleteMember={handleDeleteMember}
+        onView={handleViewMember}
+        onEdit={handleEditMember}
+        onDelete={handleDeleteMember}
       />
 
-      <CreateMemberModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={handleCreateMember}
-      />
+      {isCreateModalOpen && (
+        <MemberFormModal
+          onClose={() => setIsCreateModalOpen(false)}
+          onSubmit={handleCreateMember}
+        />
+      )}
 
-      <ViewMemberModal
-        isOpen={isViewModalOpen}
-        onClose={() => setIsViewModalOpen(false)}
-        member={selectedMember}
-      />
-
-      <CreateMemberModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        onSubmit={handleEditMember}
-        initialData={selectedMember}
-      />
+      {isViewModalOpen && selectedMember && (
+        <MemberViewModal
+          member={selectedMember}
+          onClose={() => setIsViewModalOpen(false)}
+          onEdit={handleEditMember}
+          onDelete={handleDeleteMember}
+          onUpdateProgress={handleUpdateProgress}
+          onUpdateWorkoutPlan={handleUpdateWorkoutPlan}
+          onAddPhoto={handleAddPhoto}
+          onDeletePhoto={handleDeletePhoto}
+        />
+      )}
     </div>
   );
 };

@@ -9,7 +9,7 @@ interface MembershipCardProps {
 const MembershipCard: React.FC<MembershipCardProps> = ({ member }) => {
   const membershipData = {
     id: member.id,
-    name: `${member.firstName} ${member.lastName}`,
+    name: member.name,
     type: member.membershipType,
     expiryDate: new Date(member.joinDate).setFullYear(new Date().getFullYear() + 1),
   };
@@ -18,7 +18,7 @@ const MembershipCard: React.FC<MembershipCardProps> = ({ member }) => {
     <div className="bg-gradient-to-br from-indigo-900 to-purple-900 rounded-xl p-6 max-w-sm mx-auto shadow-xl">
       <div className="flex justify-between items-start mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-white mb-1">{member.firstName} {member.lastName}</h2>
+          <h2 className="text-2xl font-bold text-white mb-1">{member.name}</h2>
           <p className="text-indigo-200">Member ID: {member.id}</p>
         </div>
         <div className="bg-white p-2 rounded-lg">

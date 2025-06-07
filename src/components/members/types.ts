@@ -1,18 +1,20 @@
+import { ProgressPhoto } from '../progress/ProgressPhotos';
+
 export type MemberStatus = 'active' | 'inactive' | 'suspended';
 
 export interface Member {
-  id: number;
-  firstName: string;
-  lastName: string;
+  id: string;
+  name: string;
   email: string;
   phone: string;
-  membershipType: string;
+  membershipType: 'basic' | 'premium' | 'vip';
   status: MemberStatus;
   joinDate: string;
-  lastVisit: string;
+  lastVisit?: string;
   membershipExpiry: string;
-  workoutPlans: WorkoutPlan[];
   fitnessGoals: FitnessGoal[];
+  workoutPlans: WorkoutPlan[];
+  progressPhotos: ProgressPhoto[];
 }
 
 export interface WorkoutPlan {
@@ -44,13 +46,13 @@ export interface FitnessGoal {
 }
 
 export interface MemberFormData {
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
   phone: string;
-  membershipType: string;
-  status: MemberStatus;
+  membershipType: Member['membershipType'];
+  status: Member['status'];
   joinDate: string;
+  membershipExpiry: string;
 }
 
 export interface CreateMemberModalProps {

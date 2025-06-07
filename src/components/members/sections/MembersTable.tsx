@@ -1,29 +1,30 @@
 import React from 'react';
 import { Member } from '../types';
+import { EyeIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface MembersTableProps {
   members: Member[];
-  onViewMember: (member: Member) => void;
-  onEditMember: (member: Member) => void;
-  onDeleteMember: (id: number) => void;
+  onView: (member: Member) => void;
+  onEdit: (member: Member) => void;
+  onDelete: (id: string) => void;
 }
 
 const MembersTable: React.FC<MembersTableProps> = ({
   members,
-  onViewMember,
-  onEditMember,
-  onDeleteMember,
+  onView,
+  onEdit,
+  onDelete,
 }) => {
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: Member['status']) => {
     switch (status) {
       case 'active':
-        return 'bg-green-800 text-green-200';
+        return 'bg-green-500';
       case 'inactive':
-        return 'bg-gray-800 text-gray-200';
+        return 'bg-gray-500';
       case 'suspended':
-        return 'bg-red-800 text-red-200';
+        return 'bg-red-500';
       default:
-        return 'bg-gray-800 text-gray-200';
+        return 'bg-gray-500';
     }
   };
 
@@ -60,12 +61,12 @@ const MembersTable: React.FC<MembersTableProps> = ({
                   <div className="flex items-center">
                     <div className="h-10 w-10 rounded-full bg-indigo-900 flex items-center justify-center">
                       <span className="text-lg text-indigo-400">
-                        {member.firstName[0]}{member.lastName[0]}
+                        {member.name.split(' ').map(n => n[0]).join('')}
                       </span>
                     </div>
                     <div className="ml-4">
                       <div className="text-sm font-medium text-white">
-                        {member.firstName} {member.lastName}
+                        {member.name}
                       </div>
                       <div className="text-sm text-gray-400">
                         ID: {member.id}
@@ -87,27 +88,29 @@ const MembersTable: React.FC<MembersTableProps> = ({
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                  {member.lastVisit}
+                  {member.lastVisit ? new Date(member.lastVisit).toLocaleDateString() : 'Never'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button
-                    onClick={() => onViewMember(member)}
-                    className="text-indigo-400 hover:text-indigo-300 mr-4"
-                  >
-                    View
-                  </button>
-                  <button
-                    onClick={() => onEditMember(member)}
-                    className="text-yellow-400 hover:text-yellow-300 mr-4"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => onDeleteMember(member.id)}
-                    className="text-red-400 hover:text-red-300"
-                  >
-                    Delete
-                  </button>
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => onView(member)}
+                      className="text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-md p-1"
+                    >
+                      <EyeIcon className="h-5 w-5" />
+                    </button>
+                    <button
+                      onClick={() => onEdit(member)}
+                      className="text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-md p-1"
+                    >
+                      <PencilIcon className="h-5 w-5" />
+                    </button>
+                    <button
+                      onClick={() => onDelete(member.id)}
+                      className="text-gray-400 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-md p-1"
+                    >
+                      <TrashIcon className="h-5 w-5" />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

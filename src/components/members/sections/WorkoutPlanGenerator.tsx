@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Member } from '../types';
+import { Member, WorkoutPlan } from '../types';
 
 interface Exercise {
   name: string;
@@ -7,14 +7,6 @@ interface Exercise {
   reps: number;
   restTime: number;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
-}
-
-interface WorkoutPlan {
-  id: string;
-  name: string;
-  exercises: Exercise[];
-  duration: number;
-  targetMuscleGroups: string[];
 }
 
 interface WorkoutPlanGeneratorProps {
@@ -71,7 +63,8 @@ const WorkoutPlanGenerator: React.FC<WorkoutPlanGeneratorProps> = ({ member, onS
       name: planName,
       exercises,
       duration,
-      targetMuscleGroups: selectedMuscleGroups
+      targetMuscleGroups: selectedMuscleGroups,
+      createdAt: new Date().toISOString()
     };
 
     onSavePlan(plan);
