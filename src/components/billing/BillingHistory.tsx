@@ -45,63 +45,37 @@ const BillingHistory: React.FC = () => {
     <div>
       <h2 className="text-lg font-medium text-gray-900 mb-4">Payment History</h2>
       
-      <div className="bg-white shadow rounded-lg overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="bg-[#232B3B] text-gray-200 shadow-none rounded-lg overflow-hidden">
+        <table className="min-w-full divide-y divide-[#181F2A]">
+          <thead className="bg-[#232B3B]">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Payment ID
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Member
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Amount
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Date
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Method
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Reference
-              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Payment ID</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Member</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Amount</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Method</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Reference</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-[#232B3B] divide-y divide-[#181F2A]">
             {currentPayments.map((payment) => (
               <tr key={payment.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {payment.id}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {payment.memberName}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  ${payment.amount.toFixed(2)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {new Date(payment.paymentDate).toLocaleDateString()}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {payment.paymentMethod.charAt(0).toUpperCase() + payment.paymentMethod.slice(1)}
-                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{payment.id}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{payment.memberName}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${payment.amount.toFixed(2)}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{new Date(payment.paymentDate).toLocaleDateString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{payment.paymentMethod.charAt(0).toUpperCase() + payment.paymentMethod.slice(1)}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                    ${payment.status === 'completed' ? 'bg-green-100 text-green-800' : ''}
-                    ${payment.status === 'failed' ? 'bg-red-100 text-red-800' : ''}
-                    ${payment.status === 'refunded' ? 'bg-yellow-100 text-yellow-800' : ''}
+                    ${payment.status === 'completed' ? 'bg-emerald-800 text-emerald-200' : ''}
+                    ${payment.status === 'failed' ? 'bg-red-900 text-red-200' : ''}
+                    ${payment.status === 'refunded' ? 'bg-yellow-900 text-yellow-200' : ''}
                   `}>
                     {payment.status.charAt(0).toUpperCase() + payment.status.slice(1)}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {payment.reference}
-                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{payment.reference}</td>
               </tr>
             ))}
           </tbody>

@@ -24,13 +24,13 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ isOpen, onClose, onCheckIn 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <div className="bg-[#232B3B] text-gray-200 rounded-xl p-6 w-full max-w-md border border-[#232B3B]">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Check In Member</h2>
+          <h2 className="text-xl font-semibold text-white">Check In Member</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-gray-400 hover:text-gray-200 text-2xl font-bold"
           >
             ✕
           </button>
@@ -40,7 +40,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ isOpen, onClose, onCheckIn 
           <input
             type="text"
             placeholder="Search members..."
-            className="w-full px-4 py-2 border rounded-lg"
+            className="w-full px-4 py-2 border border-[#232B3B] bg-[#181F2A] text-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -50,8 +50,8 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ isOpen, onClose, onCheckIn 
           {filteredMembers.map((member) => (
             <div
               key={member.id}
-              className={`p-3 cursor-pointer hover:bg-gray-100 rounded-lg ${
-                selectedMember?.id === member.id ? 'bg-blue-50' : ''
+              className={`p-3 cursor-pointer rounded-lg transition-colors duration-150 ${
+                selectedMember?.id === member.id ? 'bg-indigo-900 text-indigo-200' : 'hover:bg-[#181F2A]'
               }`}
               onClick={() => setSelectedMember(member)}
             >
@@ -63,7 +63,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ isOpen, onClose, onCheckIn 
         <div className="flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-gray-600 hover:text-gray-800"
+            className="px-4 py-2 rounded-lg bg-[#232B3B] hover:bg-[#181F2A] text-gray-200 border-0 shadow-none"
           >
             Cancel
           </button>
@@ -75,10 +75,10 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ isOpen, onClose, onCheckIn 
               }
             }}
             disabled={!selectedMember}
-            className={`px-4 py-2 rounded-lg ${
+            className={`px-4 py-2 rounded-lg border-0 shadow-none transition-colors duration-150 ${
               selectedMember
-                ? 'bg-blue-500 text-white hover:bg-blue-600'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                : 'bg-[#181F2A] text-gray-500 cursor-not-allowed'
             }`}
           >
             Check In

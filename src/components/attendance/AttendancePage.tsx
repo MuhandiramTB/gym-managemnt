@@ -31,19 +31,19 @@ const AttendancePage: React.FC = () => {
   );
 
   return (
-    <div className="p-6">
+    <div className="p-6 max-w-4xl mx-auto bg-[#181F2A] min-h-screen">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold mb-4">Gym Attendance</h1>
-        <div className="flex gap-4 mb-6">
+        <h1 className="text-3xl font-bold text-white mb-4">Gym Attendance</h1>
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <input
             type="text"
             placeholder="Search members..."
-            className="px-4 py-2 border rounded-lg flex-grow"
+            className="px-4 py-2 border border-[#232B3B] bg-[#181F2A] text-gray-200 rounded-lg flex-grow focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
           <button
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg border-0 shadow-none w-full sm:w-auto"
             onClick={() => setIsModalOpen(true)}
           >
             Check In Member
@@ -51,25 +51,25 @@ const AttendancePage: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-4 border-b">
-          <h2 className="text-lg font-semibold">Currently Present Members</h2>
+      <div className="bg-[#232B3B] text-gray-200 rounded-lg shadow-none border-0">
+        <div className="p-4 border-b border-[#232B3B]">
+          <h2 className="text-lg font-semibold text-white">Currently Present Members</h2>
         </div>
-        <div className="divide-y">
+        <div className="divide-y divide-[#181F2A]">
           {filteredMembers.length === 0 ? (
-            <div className="p-4 text-gray-500 text-center">No members currently present</div>
+            <div className="p-4 text-gray-400 text-center">No members currently present</div>
           ) : (
             filteredMembers.map((member) => (
-              <div key={member.id} className="p-4 flex items-center justify-between">
+              <div key={member.id} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                 <div>
-                  <h3 className="font-medium">{member.name}</h3>
-                  <p className="text-sm text-gray-500">
+                  <h3 className="font-medium text-white">{member.name}</h3>
+                  <p className="text-sm text-gray-400">
                     Checked in at {format(member.checkInTime, 'h:mm a')}
                   </p>
                 </div>
                 <button
                   onClick={() => handleCheckOut(member.id)}
-                  className="text-red-500 hover:text-red-600"
+                  className="text-red-400 hover:text-red-200 px-4 py-2 rounded-lg border-0 shadow-none bg-[#181F2A]"
                 >
                   Check Out
                 </button>
