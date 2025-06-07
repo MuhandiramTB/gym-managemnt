@@ -12,6 +12,7 @@ const MembersPage: React.FC = () => {
   const [members, setMembers] = useState<Member[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -52,10 +53,18 @@ const MembersPage: React.FC = () => {
     setIsCreateModalOpen(false);
   };
 
-  const handleEditMember = (member: Member) => {
+  const handleEditMember = (formData: MemberFormData) => {
+    if (!selectedMember) return;
+    
+    const updatedMember: Member = {
+      ...selectedMember,
+      ...formData,
+    };
+    
     setMembers(
-      members.map((m) => (m.id === member.id ? { ...m, ...member } : m))
+      members.map((m) => (m.id === selectedMember.id ? updatedMember : m))
     );
+    setIsEditModalOpen(false);
     setIsViewModalOpen(false);
   };
 
@@ -67,6 +76,12 @@ const MembersPage: React.FC = () => {
   const handleViewMember = (member: Member) => {
     setSelectedMember(member);
     setIsViewModalOpen(true);
+  };
+
+  const handleEditClick = (member: Member) => {
+    setSelectedMember(member);
+    setIsViewModalOpen(false);
+    setIsEditModalOpen(true);
   };
 
   const handleUpdateProgress = (memberId: string, progress: Member['fitnessGoals']) => {
@@ -141,7 +156,7 @@ const MembersPage: React.FC = () => {
       <MembersTable
         members={filteredMembers}
         onView={handleViewMember}
-        onEdit={handleEditMember}
+        onEdit={handleEditClick}
         onDelete={handleDeleteMember}
       />
 
@@ -156,12 +171,20 @@ const MembersPage: React.FC = () => {
         <MemberViewModal
           member={selectedMember}
           onClose={() => setIsViewModalOpen(false)}
-          onEdit={handleEditMember}
+          onEdit={handleEditClick}
           onDelete={handleDeleteMember}
           onUpdateProgress={handleUpdateProgress}
           onUpdateWorkoutPlan={handleUpdateWorkoutPlan}
           onAddPhoto={handleAddPhoto}
           onDeletePhoto={handleDeletePhoto}
+        />
+      )}
+
+      {isEditModalOpen && selectedMember && (
+        <MemberFormModal
+          member={selectedMember}
+          onClose={() => setIsEditModalOpen(false)}
+          onSubmit={handleEditMember}
         />
       )}
     </div>
