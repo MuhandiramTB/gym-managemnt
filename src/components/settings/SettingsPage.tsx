@@ -18,10 +18,12 @@ import SecuritySection from './sections/SecuritySection';
 import BackupSection from './sections/BackupSection';
 import LocalizationSection from './sections/LocalizationSection';
 
+type IconType = typeof Cog6ToothIcon;
+
 interface SettingSection {
   id: string;
   title: string;
-  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  icon: IconType;
   description: string;
 }
 

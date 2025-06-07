@@ -31,7 +31,7 @@ const AttendancePage: React.FC = () => {
   );
 
   return (
-    <div className="p-6 max-w-4xl mx-auto bg-[#181F2A] min-h-screen">
+    <div className="p-6 max-w-7xl mx-auto bg-[#181F2A] min-h-screen">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-4">Gym Attendance</h1>
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
