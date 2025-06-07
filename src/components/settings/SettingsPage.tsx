@@ -10,6 +10,13 @@ import {
   ClockIcon,
   CalendarIcon,
 } from '@heroicons/react/24/outline';
+import GeneralSettingsSection from './sections/GeneralSettingsSection';
+import NotificationsSection from './sections/NotificationsSection';
+import UserManagementSection from './sections/UserManagementSection';
+import BillingSection from './sections/BillingSection';
+import SecuritySection from './sections/SecuritySection';
+import BackupSection from './sections/BackupSection';
+import LocalizationSection from './sections/LocalizationSection';
 
 interface SettingSection {
   id: string;
@@ -63,6 +70,16 @@ const settingSections: SettingSection[] = [
   },
 ];
 
+const sectionComponents: Record<string, React.FC> = {
+  general: GeneralSettingsSection,
+  notifications: NotificationsSection,
+  users: UserManagementSection,
+  billing: BillingSection,
+  security: SecuritySection,
+  backup: BackupSection,
+  localization: LocalizationSection,
+};
+
 const SettingsPage: React.FC = () => {
   const [activeSection, setActiveSection] = useState('general');
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -71,7 +88,6 @@ const SettingsPage: React.FC = () => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
-
     return () => clearInterval(timer);
   }, []);
 
@@ -93,329 +109,7 @@ const SettingsPage: React.FC = () => {
     });
   };
 
-  const renderSectionContent = () => {
-    switch (activeSection) {
-      case 'general':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium text-gray-200">System Settings</h3>
-              <div className="mt-4 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300">Gym Name</label>
-                  <input
-                    type="text"
-                    className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    defaultValue="Fitness Pro Gym"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300">Contact Email</label>
-                  <input
-                    type="email"
-                    className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    defaultValue="contact@fitnesspro.com"
-                  />
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
-                    defaultChecked
-                  />
-                  <label className="ml-2 block text-sm text-gray-300">
-                    Enable maintenance mode
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'notifications':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium text-gray-200">Email Notifications</h3>
-              <div className="mt-4 space-y-4">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
-                    defaultChecked
-                  />
-                  <label className="ml-2 block text-sm text-gray-300">
-                    Send email notifications for new members
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
-                    defaultChecked
-                  />
-                  <label className="ml-2 block text-sm text-gray-300">
-                    Send payment reminders
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'users':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium text-gray-200">User Roles</h3>
-              <div className="mt-4 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300">Default Role</label>
-                  <select className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                    <option>Admin</option>
-                    <option>Manager</option>
-                    <option>Staff</option>
-                  </select>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
-                    defaultChecked
-                  />
-                  <label className="ml-2 block text-sm text-gray-300">
-                    Allow role-based access control
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'billing':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium text-gray-200">Payment Settings</h3>
-              <div className="mt-4 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300">Default Currency</label>
-                  <select className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                    <option>USD</option>
-                    <option>EUR</option>
-                    <option>GBP</option>
-                  </select>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
-                    defaultChecked
-                  />
-                  <label className="ml-2 block text-sm text-gray-300">
-                    Enable automatic billing
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-medium text-gray-200">Tax Settings</h3>
-              <div className="mt-4 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300">Tax Rate (%)</label>
-                  <input
-                    type="number"
-                    className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    defaultValue="20"
-                  />
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
-                    defaultChecked
-                  />
-                  <label className="ml-2 block text-sm text-gray-300">
-                    Include tax in displayed prices
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'security':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium text-gray-200">Password Policy</h3>
-              <div className="mt-4 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300">Minimum Password Length</label>
-                  <input
-                    type="number"
-                    className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    defaultValue="8"
-                  />
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
-                    defaultChecked
-                  />
-                  <label className="ml-2 block text-sm text-gray-300">
-                    Require special characters
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
-                    defaultChecked
-                  />
-                  <label className="ml-2 block text-sm text-gray-300">
-                    Require numbers
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-medium text-gray-200">Session Settings</h3>
-              <div className="mt-4 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300">Session Timeout (minutes)</label>
-                  <input
-                    type="number"
-                    className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    defaultValue="30"
-                  />
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
-                    defaultChecked
-                  />
-                  <label className="ml-2 block text-sm text-gray-300">
-                    Enable session activity logging
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'backup':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium text-gray-200">Backup Schedule</h3>
-              <div className="mt-4 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300">Backup Frequency</label>
-                  <select className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                    <option>Daily</option>
-                    <option>Weekly</option>
-                    <option>Monthly</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300">Backup Time</label>
-                  <input
-                    type="time"
-                    className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    defaultValue="02:00"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-medium text-gray-200">Backup Storage</h3>
-              <div className="mt-4 space-y-4">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
-                    defaultChecked
-                  />
-                  <label className="ml-2 block text-sm text-gray-300">
-                    Enable cloud backup
-                  </label>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300">Retention Period (days)</label>
-                  <input
-                    type="number"
-                    className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    defaultValue="30"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'localization':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium text-gray-200">Language Settings</h3>
-              <div className="mt-4 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300">Default Language</label>
-                  <select className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                    <option>English</option>
-                    <option>Spanish</option>
-                    <option>French</option>
-                    <option>German</option>
-                  </select>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-600 bg-[#232B3B] text-indigo-600 focus:ring-indigo-500"
-                    defaultChecked
-                  />
-                  <label className="ml-2 block text-sm text-gray-300">
-                    Allow users to change language
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-medium text-gray-200">Regional Settings</h3>
-              <div className="mt-4 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300">Time Zone</label>
-                  <select className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                    <option>UTC</option>
-                    <option>EST</option>
-                    <option>PST</option>
-                    <option>GMT</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300">Date Format</label>
-                  <select className="mt-1 block w-full rounded-md bg-[#232B3B] border-gray-600 text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                    <option>MM/DD/YYYY</option>
-                    <option>DD/MM/YYYY</option>
-                    <option>YYYY-MM-DD</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
+  const SectionComponent = sectionComponents[activeSection] || (() => null);
 
   return (
     <div className="p-6 bg-[#181F2A] min-h-screen">
@@ -470,7 +164,7 @@ const SettingsPage: React.FC = () => {
         {/* Content */}
         <div className="col-span-9">
           <div className="bg-[#232B3B] shadow-lg rounded-lg p-6">
-            {renderSectionContent()}
+            <SectionComponent />
             <div className="mt-6 flex justify-end space-x-3">
               <button
                 type="button"
