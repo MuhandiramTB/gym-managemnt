@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Member, FitnessGoal, WorkoutPlan } from '../types';
 import MembershipCard from '../sections/MembershipCard';
 import MemberProgress from '../sections/MemberProgress';
@@ -29,6 +29,7 @@ const MemberViewModal: React.FC<MemberViewModalProps> = ({
   onAddPhoto,
   onDeletePhoto,
 }) => {
+  const [showDetails, setShowDetails] = useState(false);
   const workoutPlanRef = useRef<HTMLDivElement>(null);
 
   const handleAddGoal = (goal: Omit<FitnessGoal, 'id'>) => {
@@ -61,7 +62,10 @@ const MemberViewModal: React.FC<MemberViewModalProps> = ({
 
   // Scroll to Workout Plan section
   const handleGenerateWorkoutPlan = () => {
-    workoutPlanRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setShowDetails(true);
+    setTimeout(() => {
+      workoutPlanRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
   };
 
   return (
@@ -72,46 +76,56 @@ const MemberViewModal: React.FC<MemberViewModalProps> = ({
       <div className="bg-[#232B3B] rounded-2xl shadow-2xl p-6 w-full max-w-2xl sm:max-w-4xl mx-2 mt-40 transition-all max-h-[90vh] overflow-y-auto"
         onClick={e => e.stopPropagation()}
       >
-        {/* Top Section */}
-        <div className="mb-6 flex flex-col items-center">
+        {/* Primary View - QR and Basic Info */}
+        <div className="mb-6 mt-10">
           <MembershipCard member={member} />
-          <button
-            onClick={handleGenerateWorkoutPlan}
-            className="mt-4 px-6 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow"
-          >
-            Generate Workout Plan
-          </button>
+          <div className="mt-6 flex justify-center space-x-4">
+            <button
+              onClick={() => setShowDetails(!showDetails)}
+              className="px-6 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow"
+            >
+              {showDetails ? 'Hide Details' : 'Show Details'}
+            </button>
+            <button
+              onClick={handleGenerateWorkoutPlan}
+              className="px-6 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow"
+            >
+              Generate Workout Plan
+            </button>
+          </div>
         </div>
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="space-y-6">
-            <PersonalInfo member={member} />
-            <MembershipDetails member={member} />
-          </div>
-
-          <div className="space-y-6">
-            <MemberProgress
-              memberId={member.id}
-              goals={member.fitnessGoals}
-              onUpdateProgress={handleUpdateGoal}
-              onAddGoal={handleAddGoal}
-            />
-
-            <div ref={workoutPlanRef}>
-              <WorkoutPlanGenerator
-                member={member}
-                onSavePlan={(plan) => onUpdateWorkoutPlan(member.id, plan)}
-              />
+        {/* Secondary View - Additional Details */}
+        {showDetails && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 border-t border-gray-700 pt-6">
+            <div className="space-y-6">
+              <PersonalInfo member={member} />
+              <MembershipDetails member={member} />
             </div>
 
-            <ProgressPhotos
-              photos={member.progressPhotos || []}
-              onAddPhoto={(photo) => onAddPhoto(member.id, photo)}
-              onDeletePhoto={(photoId) => onDeletePhoto(member.id, photoId)}
-            />
+            <div className="space-y-6">
+              <MemberProgress
+                memberId={member.id}
+                goals={member.fitnessGoals}
+                onUpdateProgress={handleUpdateGoal}
+                onAddGoal={handleAddGoal}
+              />
+
+              <div ref={workoutPlanRef}>
+                <WorkoutPlanGenerator
+                  member={member}
+                  onSavePlan={(plan) => onUpdateWorkoutPlan(member.id, plan)}
+                />
+              </div>
+
+              <ProgressPhotos
+                photos={member.progressPhotos || []}
+                onAddPhoto={(photo) => onAddPhoto(member.id, photo)}
+                onDeletePhoto={(photoId) => onDeletePhoto(member.id, photoId)}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Action Buttons */}
         <MemberActions
