@@ -1,25 +1,22 @@
-import { FC } from 'react';
-import { Title, Text, Button } from '@tremor/react';
-import { PlusIcon } from '@heroicons/react/24/outline';
+import React from 'react';
 
 interface MembersHeaderProps {
   onAddMember: () => void;
 }
 
-const MembersHeader: FC<MembersHeaderProps> = ({ onAddMember }) => {
+const MembersHeader: React.FC<MembersHeaderProps> = ({ onAddMember }) => {
   return (
-    <div className="flex justify-between items-center mb-8">
+    <div className="flex justify-between items-center mb-6">
       <div>
-        <Title className="text-3xl font-bold text-white">Members</Title>
-        <Text className="text-gray-400 mt-1">Manage your gym members and their memberships</Text>
+        <h1 className="text-2xl font-bold text-white">Members</h1>
+        <p className="text-gray-400">Manage your gym members and their details</p>
       </div>
-      <Button
-        icon={PlusIcon}
+      <button
         onClick={onAddMember}
-        className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow-none border-0"
+        className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
       >
-        Add Member
-      </Button>
+        Add New Member
+      </button>
     </div>
   );
 };

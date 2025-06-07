@@ -1,5 +1,5 @@
-import { FC, useState } from 'react';
-import { Member, MemberFormData } from './types';
+import { FC, useState, useEffect } from 'react';
+import { Member, MemberFormData, WorkoutPlan, FitnessGoal } from './types';
 import CreateMemberModal from './sections/CreateMemberModal';
 import ViewMemberModal from './sections/ViewMemberModal';
 import MembersHeader from './sections/MembersHeader';
@@ -23,6 +23,9 @@ const MembersPage: FC = () => {
       status: 'active',
       joinDate: '2024-01-15',
       lastVisit: '2024-03-10',
+      membershipExpiry: '2025-01-15',
+      workoutPlans: [],
+      fitnessGoals: []
     },
     {
       id: 2,
@@ -34,14 +37,42 @@ const MembersPage: FC = () => {
       status: 'inactive',
       joinDate: '2024-02-01',
       lastVisit: '2024-03-05',
+      membershipExpiry: '2025-02-01',
+      workoutPlans: [],
+      fitnessGoals: []
     },
   ]);
+
+  // Check for membership renewals
+  useEffect(() => {
+    const checkRenewals = () => {
+      const thirtyDaysFromNow = new Date();
+      thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+
+      members.forEach(member => {
+        const expiryDate = new Date(member.membershipExpiry);
+        if (expiryDate <= thirtyDaysFromNow) {
+          // TODO: Implement notification system
+          console.log(`Membership renewal needed for ${member.firstName} ${member.lastName}`);
+        }
+      });
+    };
+
+    checkRenewals();
+    const interval = setInterval(checkRenewals, 24 * 60 * 60 * 1000); // Check daily
+    return () => clearInterval(interval);
+  }, [members]);
 
   const handleCreateMember = (memberData: MemberFormData) => {
     const newMember: Member = {
       ...memberData,
       id: members.length + 1,
+      joinDate: new Date().toISOString().split('T')[0],
       lastVisit: new Date().toISOString().split('T')[0],
+      membershipExpiry: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
+      workoutPlans: [],
+      fitnessGoals: [],
+      status: 'active'
     };
     setMembers([...members, newMember]);
   };
@@ -71,6 +102,56 @@ const MembersPage: FC = () => {
   const handleEditClick = (member: Member) => {
     setSelectedMember(member);
     setIsEditModalOpen(true);
+  };
+
+  const handleSaveWorkoutPlan = (memberId: number, plan: WorkoutPlan) => {
+    const updatedMembers = members.map(member =>
+      member.id === memberId
+        ? {
+            ...member,
+            workoutPlans: [...member.workoutPlans, { ...plan, createdAt: new Date().toISOString() }]
+          }
+        : member
+    );
+    setMembers(updatedMembers);
+  };
+
+  const handleUpdateProgress = (memberId: number, goalId: string, newValue: number) => {
+    const updatedMembers = members.map(member =>
+      member.id === memberId
+        ? {
+            ...member,
+            fitnessGoals: member.fitnessGoals.map(goal =>
+              goal.id === goalId
+                ? {
+                    ...goal,
+                    current: newValue,
+                    status: newValue >= goal.target ? 'completed' as const : 'in-progress' as const
+                  }
+                : goal
+            )
+          }
+        : member
+    );
+    setMembers(updatedMembers);
+  };
+
+  const handleAddGoal = (memberId: number, goal: Omit<FitnessGoal, 'id'>) => {
+    const newGoal: FitnessGoal = {
+      ...goal,
+      id: Math.random().toString(36).substr(2, 9),
+      status: 'not-started'
+    };
+
+    const updatedMembers = members.map(member =>
+      member.id === memberId
+        ? {
+            ...member,
+            fitnessGoals: [...member.fitnessGoals, newGoal]
+          }
+        : member
+    );
+    setMembers(updatedMembers);
   };
 
   const filteredMembers = members.filter(member => 
