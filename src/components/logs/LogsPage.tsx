@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
-import { MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline';
+import {
+  MagnifyingGlassIcon,
+  FunnelIcon,
+  UserIcon,
+  CurrencyDollarIcon,
+  CheckCircleIcon,
+  WrenchScrewdriverIcon,
+  Cog6ToothIcon,
+  EyeIcon
+} from '@heroicons/react/24/outline';
+import LogDetailsModal from './LogDetailsModal';
 
 export type LogType = 'member' | 'payment' | 'attendance' | 'service' | 'system';
 
@@ -71,23 +81,6 @@ const LogsPage: React.FC = () => {
     },
   ]);
 
-  const getLogTypeColor = (type: LogType) => {
-    switch (type) {
-      case 'member':
-        return 'bg-blue-100 text-blue-800';
-      case 'payment':
-        return 'bg-green-100 text-green-800';
-      case 'attendance':
-        return 'bg-purple-100 text-purple-800';
-      case 'service':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'system':
-        return 'bg-gray-100 text-gray-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
   const filteredLogs = logs.filter((log) => {
     const matchesSearch = 
       log.action.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -102,10 +95,31 @@ const LogsPage: React.FC = () => {
     return matchesSearch && matchesType && matchesDate;
   });
 
+  const logTypeIcon = (type: LogType) => {
+    switch (type) {
+      case 'member':
+        return <UserIcon className="h-5 w-5 text-blue-400" />;
+      case 'payment':
+        return <CurrencyDollarIcon className="h-5 w-5 text-green-400" />;
+      case 'attendance':
+        return <CheckCircleIcon className="h-5 w-5 text-purple-400" />;
+      case 'service':
+        return <WrenchScrewdriverIcon className="h-5 w-5 text-yellow-400" />;
+      case 'system':
+        return <Cog6ToothIcon className="h-5 w-5 text-gray-400" />;
+      default:
+        return null;
+    }
+  };
+
+  const [detailsModal, setDetailsModal] = useState<{ open: boolean; log: Log | null }>({ open: false, log: null });
+
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-8 bg-[#181F2A] min-h-screen">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-4">System Logs</h1>
+        <h1 className="text-3xl font-bold text-white mb-4 flex items-center gap-2">
+          <Cog6ToothIcon className="h-7 w-7 text-indigo-500" /> System Logs
+        </h1>
         
         {/* Search and Filters */}
         <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -114,7 +128,7 @@ const LogsPage: React.FC = () => {
               <input
                 type="text"
                 placeholder="Search logs..."
-                className="w-full pl-10 pr-4 py-2 border rounded-lg"
+                className="w-full pl-10 pr-4 py-2 rounded-lg border border-[#232B3B] bg-[#232B3B] text-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -124,7 +138,7 @@ const LogsPage: React.FC = () => {
           
           <div className="flex gap-2">
             <button
-              className="px-4 py-2 border rounded-lg flex items-center gap-2"
+              className="px-4 py-2 rounded-lg flex items-center gap-2 bg-[#232B3B] text-gray-200 border border-[#232B3B] hover:bg-[#181F2A]"
               onClick={() => {/* TODO: Implement advanced filters */}}
             >
               <FunnelIcon className="h-5 w-5" />
@@ -145,12 +159,13 @@ const LogsPage: React.FC = () => {
                     : [...prev, type]
                 );
               }}
-              className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${
+              className={`px-3 py-1 rounded-full text-sm font-medium capitalize flex items-center gap-1 transition-all duration-150 ${
                 selectedTypes.includes(type)
-                  ? getLogTypeColor(type)
-                  : 'bg-gray-100 text-gray-600'
+                  ? 'bg-indigo-600 text-white shadow'
+                  : 'bg-[#232B3B] text-gray-400 hover:bg-[#181F2A]'
               }`}
             >
+              {logTypeIcon(type)}
               {type}
             </button>
           ))}
@@ -158,58 +173,58 @@ const LogsPage: React.FC = () => {
       </div>
 
       {/* Logs Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-[#232B3B] rounded-xl shadow-lg overflow-hidden border border-[#232B3B]">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-[#232B3B]">
+            <thead className="bg-[#181F2A]">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Time
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Action
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Description
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   User
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Details
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-[#232B3B] divide-y divide-[#181F2A]">
               {filteredLogs.map((log) => (
-                <tr key={log.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <tr key={log.id} className="hover:bg-[#181F2A] transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                     {format(log.timestamp, 'MMM d, yyyy h:mm a')}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getLogTypeColor(log.type)}`}>
-                      {log.type}
-                    </span>
+                  <td className="px-6 py-4 whitespace-nowrap flex items-center gap-2">
+                    {logTypeIcon(log.type)}
+                    <span className="capitalize text-gray-200">{log.type}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">
                     {log.action}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm text-gray-400">
                     {log.description}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                     {log.user}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm text-indigo-400">
                     {log.details && (
                       <button
-                        onClick={() => {/* TODO: Implement details modal */}}
-                        className="text-blue-600 hover:text-blue-800"
+                        onClick={() => setDetailsModal({ open: true, log })}
+                        className="flex items-center gap-1 hover:text-indigo-300 transition-colors"
                       >
-                        View Details
+                        <EyeIcon className="h-5 w-5" />
+                        View
                       </button>
                     )}
                   </td>
@@ -219,6 +234,11 @@ const LogsPage: React.FC = () => {
           </table>
         </div>
       </div>
+      <LogDetailsModal
+        isOpen={detailsModal.open}
+        onClose={() => setDetailsModal({ open: false, log: null })}
+        log={detailsModal.log}
+      />
     </div>
   );
 };
