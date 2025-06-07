@@ -1,10 +1,12 @@
-import React from 'react';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import React, { useRef } from 'react';
 import { Member, FitnessGoal, WorkoutPlan } from '../types';
 import MembershipCard from '../sections/MembershipCard';
 import MemberProgress from '../sections/MemberProgress';
 import WorkoutPlanGenerator from '../sections/WorkoutPlanGenerator';
 import ProgressPhotos from '../../progress/ProgressPhotos';
+import PersonalInfo from '../sections/PersonalInfo';
+import MembershipDetails from '../sections/MembershipDetails';
+import MemberActions from '../sections/MemberActions';
 
 interface MemberViewModalProps {
   member: Member;
@@ -27,6 +29,8 @@ const MemberViewModal: React.FC<MemberViewModalProps> = ({
   onAddPhoto,
   onDeletePhoto,
 }) => {
+  const workoutPlanRef = useRef<HTMLDivElement>(null);
+
   const handleAddGoal = (goal: Omit<FitnessGoal, 'id'>) => {
     const newGoal: FitnessGoal = {
       id: crypto.randomUUID(),
@@ -55,6 +59,11 @@ const MemberViewModal: React.FC<MemberViewModalProps> = ({
     setTimeout(() => onEdit(member), 0);
   };
 
+  // Scroll to Workout Plan section
+  const handleGenerateWorkoutPlan = () => {
+    workoutPlanRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
@@ -63,72 +72,22 @@ const MemberViewModal: React.FC<MemberViewModalProps> = ({
       <div className="bg-[#232B3B] rounded-2xl shadow-2xl p-6 w-full max-w-2xl sm:max-w-4xl mx-2 mt-40 transition-all max-h-[90vh] overflow-y-auto"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-white">Member Details</h2>
+        {/* Top Section */}
+        <div className="mb-6 flex flex-col items-center">
+          <MembershipCard member={member} />
           <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-white"
-            aria-label="Close"
+            onClick={handleGenerateWorkoutPlan}
+            className="mt-4 px-6 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow"
           >
-            <XMarkIcon className="h-6 w-6" />
+            Generate Workout Plan
           </button>
         </div>
 
+        {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="space-y-6">
-            <div className="bg-[#181F2A] rounded-lg p-4">
-              <h3 className="text-lg font-semibold text-white mb-4">Personal Information</h3>
-              <div className="space-y-2">
-                <p className="text-gray-300">
-                  <span className="text-gray-400">Name:</span> {member.name}
-                </p>
-                <p className="text-gray-300">
-                  <span className="text-gray-400">Email:</span> {member.email}
-                </p>
-                <p className="text-gray-300">
-                  <span className="text-gray-400">Phone:</span> {member.phone}
-                </p>
-                <p className="text-gray-300">
-                  <span className="text-gray-400">Join Date:</span>{' '}
-                  {new Date(member.joinDate).toLocaleDateString()}
-                </p>
-                <p className="text-gray-300">
-                  <span className="text-gray-400">Last Visit:</span>{' '}
-                  {member.lastVisit
-                    ? new Date(member.lastVisit).toLocaleDateString()
-                    : 'Never'}
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-[#181F2A] rounded-lg p-4">
-              <h3 className="text-lg font-semibold text-white mb-4">Membership Details</h3>
-              <div className="space-y-2">
-                <p className="text-gray-300">
-                  <span className="text-gray-400">Type:</span> {member.membershipType}
-                </p>
-                <p className="text-gray-300">
-                  <span className="text-gray-400">Status:</span>{' '}
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs ${
-                      member.status === 'active'
-                        ? 'bg-green-500 text-white'
-                        : member.status === 'suspended'
-                        ? 'bg-red-500 text-white'
-                        : 'bg-gray-500 text-white'
-                    }`}
-                  >
-                    {member.status}
-                  </span>
-                </p>
-                <p className="text-gray-300">
-                  <span className="text-gray-400">Expiry:</span>{' '}
-                  {new Date(member.membershipExpiry).toLocaleDateString()}
-                </p>
-              </div>
-            </div>
-
-            <MembershipCard member={member} />
+            <PersonalInfo member={member} />
+            <MembershipDetails member={member} />
           </div>
 
           <div className="space-y-6">
@@ -139,10 +98,12 @@ const MemberViewModal: React.FC<MemberViewModalProps> = ({
               onAddGoal={handleAddGoal}
             />
 
-            <WorkoutPlanGenerator
-              member={member}
-              onSavePlan={(plan) => onUpdateWorkoutPlan(member.id, plan)}
-            />
+            <div ref={workoutPlanRef}>
+              <WorkoutPlanGenerator
+                member={member}
+                onSavePlan={(plan) => onUpdateWorkoutPlan(member.id, plan)}
+              />
+            </div>
 
             <ProgressPhotos
               photos={member.progressPhotos || []}
@@ -152,26 +113,12 @@ const MemberViewModal: React.FC<MemberViewModalProps> = ({
           </div>
         </div>
 
-        <div className="flex flex-wrap justify-end gap-3 mt-6">
-          <button
-            onClick={handleEditClick}
-            className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          >
-            Edit Member
-          </button>
-          <button
-            onClick={() => onDelete(member.id)}
-            className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
-          >
-            Delete Member
-          </button>
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 rounded-md hover:text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
-          >
-            Close
-          </button>
-        </div>
+        {/* Action Buttons */}
+        <MemberActions
+          onEdit={handleEditClick}
+          onDelete={() => onDelete(member.id)}
+          onClose={onClose}
+        />
       </div>
     </div>
   );
