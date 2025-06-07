@@ -30,6 +30,10 @@ const MemberViewModal: React.FC<MemberViewModalProps> = ({
   onDeletePhoto,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
+  const [showProgress, setShowProgress] = useState(false);
+  const [showPhotos, setShowPhotos] = useState(false);
+  const [showWorkoutPlan, setShowWorkoutPlan] = useState(false);
+  const [showMembershipDetails, setShowMembershipDetails] = useState(false);
   const workoutPlanRef = useRef<HTMLDivElement>(null);
 
   const handleAddGoal = (goal: Omit<FitnessGoal, 'id'>) => {
@@ -47,25 +51,38 @@ const MemberViewModal: React.FC<MemberViewModalProps> = ({
     onUpdateProgress(member.id, updatedGoals);
   };
 
-  // Helper to handle overlay click
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (e.target === e.currentTarget) {
       onClose();
     }
   };
 
-  // Helper for edit button
   const handleEditClick = () => {
     onClose();
     setTimeout(() => onEdit(member), 0);
   };
 
-  // Scroll to Workout Plan section
   const handleGenerateWorkoutPlan = () => {
-    setShowDetails(true);
+    setShowWorkoutPlan(true);
     setTimeout(() => {
       workoutPlanRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 100);
+  };
+
+  const handleViewDetails = () => {
+    const newShowDetails = !showDetails;
+    setShowDetails(newShowDetails);
+    if (newShowDetails) {
+      setShowProgress(true);
+      setShowPhotos(true);
+      setShowWorkoutPlan(true);
+      setShowMembershipDetails(true);
+    } else {
+      setShowProgress(false);
+      setShowPhotos(false);
+      setShowWorkoutPlan(false);
+      setShowMembershipDetails(false);
+    }
   };
 
   return (
@@ -79,53 +96,89 @@ const MemberViewModal: React.FC<MemberViewModalProps> = ({
         {/* Primary View - QR and Basic Info */}
         <div className="mb-6 mt-10">
           <MembershipCard member={member} />
-          <div className="mt-6 flex justify-center space-x-4">
+          <div className="mt-6 flex flex-wrap justify-center gap-4">
             <button
-              onClick={() => setShowDetails(!showDetails)}
+              onClick={handleViewDetails}
               className="px-6 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow"
             >
-              {showDetails ? 'Hide Details' : 'Show Details'}
+              {showDetails ? 'Hide Details' : 'View All Details'}
             </button>
             <button
-              onClick={handleGenerateWorkoutPlan}
+              onClick={() => setShowMembershipDetails(!showMembershipDetails)}
               className="px-6 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow"
             >
-              Generate Workout Plan
+              {showMembershipDetails ? 'Hide Membership' : 'Show Membership'}
+            </button>
+            <button
+              onClick={() => setShowProgress(!showProgress)}
+              className="px-6 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow"
+            >
+              {showProgress ? 'Hide Progress' : 'Show Progress'}
+            </button>
+            <button
+              onClick={() => setShowPhotos(!showPhotos)}
+              className="px-6 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow"
+            >
+              {showPhotos ? 'Hide Photos' : 'Show Photos'}
+            </button>
+            <button
+              onClick={() => setShowWorkoutPlan(!showWorkoutPlan)}
+              className="px-6 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow"
+            >
+              {showWorkoutPlan ? 'Hide Workout Plan' : 'Show Workout Plan'}
             </button>
           </div>
         </div>
 
-        {/* Secondary View - Additional Details */}
-        {showDetails && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 border-t border-gray-700 pt-6">
-            <div className="space-y-6">
-              <PersonalInfo member={member} />
-              <MembershipDetails member={member} />
+        {/* Secondary Views - Feature Sections */}
+        <div className="space-y-6 mt-6">
+          {/* Membership Details Section */}
+          {showMembershipDetails && (
+            <div className="border-t border-gray-700 pt-6">
+              <h3 className="text-xl font-bold text-white mb-4">Membership Details</h3>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <PersonalInfo member={member} />
+                <MembershipDetails member={member} />
+              </div>
             </div>
+          )}
 
-            <div className="space-y-6">
+          {/* Progress Tracking Section */}
+          {showProgress && (
+            <div className="border-t border-gray-700 pt-6">
+              <h3 className="text-xl font-bold text-white mb-4">Progress Tracking</h3>
               <MemberProgress
                 memberId={member.id}
                 goals={member.fitnessGoals}
                 onUpdateProgress={handleUpdateGoal}
                 onAddGoal={handleAddGoal}
               />
+            </div>
+          )}
 
-              <div ref={workoutPlanRef}>
-                <WorkoutPlanGenerator
-                  member={member}
-                  onSavePlan={(plan) => onUpdateWorkoutPlan(member.id, plan)}
-                />
-              </div>
-
+          {/* Progress Photos Section */}
+          {showPhotos && (
+            <div className="border-t border-gray-700 pt-6">
+              <h3 className="text-xl font-bold text-white mb-4">Progress Photos</h3>
               <ProgressPhotos
                 photos={member.progressPhotos || []}
                 onAddPhoto={(photo) => onAddPhoto(member.id, photo)}
                 onDeletePhoto={(photoId) => onDeletePhoto(member.id, photoId)}
               />
             </div>
-          </div>
-        )}
+          )}
+
+          {/* Workout Plan Section */}
+          {showWorkoutPlan && (
+            <div className="border-t border-gray-700 pt-6" ref={workoutPlanRef}>
+              <h3 className="text-xl font-bold text-white mb-4">Workout Plan</h3>
+              <WorkoutPlanGenerator
+                member={member}
+                onSavePlan={(plan) => onUpdateWorkoutPlan(member.id, plan)}
+              />
+            </div>
+          )}
+        </div>
 
         {/* Action Buttons */}
         <MemberActions
@@ -138,4 +191,4 @@ const MemberViewModal: React.FC<MemberViewModalProps> = ({
   );
 };
 
-export default MemberViewModal; 
+export default MemberViewModal;
