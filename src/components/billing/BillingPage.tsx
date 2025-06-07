@@ -3,6 +3,14 @@ import {
   PlusIcon,
   MagnifyingGlassIcon,
   FunnelIcon,
+  IdentificationIcon,
+  UserIcon,
+  CurrencyDollarIcon,
+  CalendarIcon,
+  CheckCircleIcon,
+  TagIcon,
+  PencilIcon,
+  CreditCardIcon,
 } from '@heroicons/react/24/outline';
 import BillModal from './BillModal';
 import PaymentModal from './PaymentModal';
@@ -74,13 +82,13 @@ const BillingPage: React.FC = () => {
         <table className="min-w-full divide-y divide-[#181F2A]">
           <thead className="bg-[#232B3B]">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Bill ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Member</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Amount</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Due Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"><span className="flex items-center gap-1"><IdentificationIcon className="h-4 w-4 text-indigo-400" /> Bill ID</span></th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"><span className="flex items-center gap-1"><UserIcon className="h-4 w-4 text-indigo-400" /> Member</span></th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"><span className="flex items-center gap-1"><CurrencyDollarIcon className="h-4 w-4 text-indigo-400" /> Amount</span></th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"><span className="flex items-center gap-1"><CalendarIcon className="h-4 w-4 text-indigo-400" /> Due Date</span></th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"><span className="flex items-center gap-1"><CheckCircleIcon className="h-4 w-4 text-indigo-400" /> Status</span></th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"><span className="flex items-center gap-1"><TagIcon className="h-4 w-4 text-indigo-400" /> Type</span></th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider"><span className="flex items-center gap-1 justify-end"><PencilIcon className="h-4 w-4 text-indigo-400" /> Actions</span></th>
             </tr>
           </thead>
           <tbody className="bg-[#232B3B] divide-y divide-[#181F2A]">
@@ -100,19 +108,19 @@ const BillingPage: React.FC = () => {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{bill.type}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex gap-2 justify-end">
                   <button
                     onClick={() => handleEditBill(bill)}
-                    className="text-indigo-400 hover:text-indigo-200 mr-4"
+                    className="text-indigo-400 hover:text-indigo-200 flex items-center gap-1"
                   >
-                    Edit
+                    <PencilIcon className="h-4 w-4" /> Edit
                   </button>
                   {bill.status !== 'paid' && (
                     <button
                       onClick={() => handleMakePayment(bill)}
-                      className="text-emerald-400 hover:text-emerald-200"
+                      className="text-emerald-400 hover:text-emerald-200 flex items-center gap-1"
                     >
-                      Pay
+                      <CreditCardIcon className="h-4 w-4" /> Pay
                     </button>
                   )}
                 </td>

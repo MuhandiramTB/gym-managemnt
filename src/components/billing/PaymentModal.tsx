@@ -64,15 +64,15 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, bill }) =>
           </div>
 
           <div className="mb-6">
-            <h3 className="text-sm font-medium text-gray-500">Bill Details</h3>
+            <h3 className="text-sm font-medium text-white">Bill Details</h3>
             <div className="mt-2 space-y-2">
-              <p className="text-sm text-gray-900">
+              <p className="text-sm text-white">
                 <span className="font-medium">Member:</span> {bill.memberName}
               </p>
-              <p className="text-sm text-gray-900">
+              <p className="text-sm text-white">
                 <span className="font-medium">Amount:</span> ${bill.amount.toFixed(2)}
               </p>
-              <p className="text-sm text-gray-900">
+              <p className="text-sm text-white">
                 <span className="font-medium">Description:</span> {bill.description}
               </p>
             </div>

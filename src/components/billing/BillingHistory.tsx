@@ -43,7 +43,7 @@ const BillingHistory: React.FC = () => {
 
   return (
     <div>
-      <h2 className="text-lg font-medium text-gray-900 mb-4">Payment History</h2>
+      <h2 className="text-lg font-medium text-white mb-4">Payment History</h2>
       
       <div className="bg-[#232B3B] text-gray-200 shadow-none rounded-lg overflow-hidden">
         <table className="min-w-full divide-y divide-[#181F2A]">
